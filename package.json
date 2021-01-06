@@ -1,8 +1,8 @@
 {
-  "name": "cdkpipelines-demo",
+  "name": "aws-serverless-video-processing",
   "version": "0.1.0",
   "bin": {
-    "cdkpipelines-demo": "bin/cdkpipelines-demo.js"
+    "aws-serverless-video-processing": "bin/aws-serverless-video-processing.js"
   },
   "scripts": {
     "build": "tsc",
@@ -21,12 +21,12 @@
     "typescript": "~3.9.7"
   },
   "dependencies": {
-    "@aws-cdk/aws-apigateway": "^1.82.0",
-    "@aws-cdk/aws-codepipeline": "^1.82.0",
-    "@aws-cdk/aws-codepipeline-actions": "^1.82.0",
-    "@aws-cdk/aws-lambda": "^1.82.0",
+    "@aws-cdk/aws-apigateway": "^1.83.0",
+    "@aws-cdk/aws-codepipeline": "^1.83.0",
+    "@aws-cdk/aws-codepipeline-actions": "^1.83.0",
+    "@aws-cdk/aws-lambda": "^1.83.0",
     "@aws-cdk/core": "1.82.0",
-    "@aws-cdk/pipelines": "^1.82.0",
+    "@aws-cdk/pipelines": "^1.83.0",
     "@types/aws-lambda": "^8.10.70",
     "source-map-support": "^0.5.16"
   }
