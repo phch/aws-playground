@@ -25,6 +25,7 @@ export class AwsServerlessVideoProcessingPipelineStack extends Stack {
                 oauthToken: SecretValue.secretsManager('github-token'),
                 owner: 'phch',
                 repo: 'aws-serverless-video-processing',
+                branch: 'main',
             }),
 
             // How it will be built and synthesized
