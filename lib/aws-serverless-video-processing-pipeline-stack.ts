@@ -15,7 +15,7 @@ export class AwsServerlessVideoProcessingPipelineStack extends Stack {
 
         const pipeline = new CdkPipeline(this, 'Pipeline', {
             // The pipeline name
-            pipelineName: 'MyServicePipeline',
+            pipelineName: 'AwsServerlessVideoProcessingPipeline',
             cloudAssemblyArtifact,
 
             // Where the source can be found
