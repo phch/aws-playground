@@ -2,7 +2,7 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 import { Construct, SecretValue, Stack, StackProps } from '@aws-cdk/core';
 import {CdkPipeline, ShellScriptAction, SimpleSynthAction} from "@aws-cdk/pipelines";
-import { AwsServerlessVideoProcessingStage } from './aws-serverless-video-procesing-stage';
+import { AwsServerlessVideoProcessingStage } from './aws-serverless-video-processing-stage';
 
 /**
  * The stack that defines the application pipeline
