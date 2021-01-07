@@ -1,7 +1,7 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 import { Construct, SecretValue, Stack, StackProps } from '@aws-cdk/core';
-import { CdkPipeline, SimpleSynthAction } from "@aws-cdk/pipelines";
+import {CdkPipeline, ShellScriptAction, SimpleSynthAction} from "@aws-cdk/pipelines";
 import { AwsServerlessVideoProcessingStage } from './aws-serverless-video-procesing-stage';
 
 /**
@@ -40,7 +40,19 @@ export class AwsServerlessVideoProcessingPipelineStack extends Stack {
         });
 
         // This is where we add the application stages
-        pipeline.addApplicationStage(new AwsServerlessVideoProcessingStage(this, 'PreProd'));
+        const preprod = new AwsServerlessVideoProcessingStage(this, 'PreProd');
+        const preprodStage = pipeline.addApplicationStage(preprod);
+        preprodStage.addActions(new ShellScriptAction({
+            actionName: 'TestService',
+            useOutputs: {
+                ENDPOINT_URL: pipeline.stackOutput(preprod.urlOutput),
+            },
+            commands: [
+                // Use 'curl' to GET the given URL and fail if it returns an error
+                'curl -Ssf $ENDPOINT_URL',
+            ],
+        }));
+
         pipeline.addApplicationStage(new AwsServerlessVideoProcessingStage(this, 'Prod'));
 
     }
