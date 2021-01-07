@@ -10,7 +10,7 @@ export class AwsServerlessVideoProcessingStage extends Stage {
     constructor(scope: Construct, id: string, props?: StageProps) {
         super(scope, id, props);
 
-        const service = new AwsServerlessVideoProcessingStack(this, 'WebService');
+        const service = new AwsServerlessVideoProcessingStack(this, 'AwsServerlessVideoProcessingService');
 
         // Expose CdkpipelinesDemoStack's output one level higher
         this.urlOutput = service.urlOutput;
