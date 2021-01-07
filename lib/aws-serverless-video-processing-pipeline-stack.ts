@@ -41,5 +41,7 @@ export class AwsServerlessVideoProcessingPipelineStack extends Stack {
 
         // This is where we add the application stages
         pipeline.addApplicationStage(new AwsServerlessVideoProcessingStage(this, 'PreProd'));
+        pipeline.addApplicationStage(new AwsServerlessVideoProcessingStage(this, 'Prod'));
+
     }
 }
