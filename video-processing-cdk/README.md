@@ -1,6 +1,11 @@
 ## Overview
 
-This project launches a FFMPEG-backed Lambda using CDK.
+This project launches a FFMPEG-backed Lambda video processor using CDK. Processing happens in-memory which can scale up to 10 GB, so it gets around the /tmp directory fixed space of 512 MB.
+
+It should run at a fraction of the cost of managed AWS media services like Elastic Transcoder or MediaConvert and is suitable for simple video processing. Large video files (> 4 GB) may not be supported by this solution.  
+
+
+There are drawbacks to this solution; for example, it cannot process large videos (>GB) due to Lambda's memory limit an runtime. And, 
 
 ## Resources
 The stack contains two buckets: an input bucket to upload videos and an output video to store processed videos.

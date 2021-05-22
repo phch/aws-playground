@@ -24,7 +24,9 @@ export class VideoProcessingCdkStack extends cdk.Stack {
       layers: [layer],
       environment: {
         'S3_DESTINATION_BUCKET': outputBucket.bucketName
-      }
+      },
+      memorySize: 512,
+      timeout: cdk.Duration.seconds(30),
     });
     inputBucket.addEventNotification(s3.EventType.OBJECT_CREATED_PUT, new s3n.LambdaDestination(fn), { suffix: '.mp4' });
     inputBucket.grantRead(fn);
