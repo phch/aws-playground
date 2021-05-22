@@ -1,0 +1,468 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Matches snapshot 1`] = `
+Object {
+  "Parameters": Object {
+    "AssetParameters819e1c802f7a3ee062b88ee47bec19d4f4f9c0e9475221ce3d678e85581305a5ArtifactHashE978C27E": Object {
+      "Description": "Artifact hash for asset \\"819e1c802f7a3ee062b88ee47bec19d4f4f9c0e9475221ce3d678e85581305a5\\"",
+      "Type": "String",
+    },
+    "AssetParameters819e1c802f7a3ee062b88ee47bec19d4f4f9c0e9475221ce3d678e85581305a5S3Bucket181207DA": Object {
+      "Description": "S3 bucket for asset \\"819e1c802f7a3ee062b88ee47bec19d4f4f9c0e9475221ce3d678e85581305a5\\"",
+      "Type": "String",
+    },
+    "AssetParameters819e1c802f7a3ee062b88ee47bec19d4f4f9c0e9475221ce3d678e85581305a5S3VersionKey842E1070": Object {
+      "Description": "S3 key for asset version \\"819e1c802f7a3ee062b88ee47bec19d4f4f9c0e9475221ce3d678e85581305a5\\"",
+      "Type": "String",
+    },
+    "AssetParametersac7f5d00801594308615088ac65f2f0848f8cc59edd9fc76134593bebef2de31ArtifactHashEBE1FBBA": Object {
+      "Description": "Artifact hash for asset \\"ac7f5d00801594308615088ac65f2f0848f8cc59edd9fc76134593bebef2de31\\"",
+      "Type": "String",
+    },
+    "AssetParametersac7f5d00801594308615088ac65f2f0848f8cc59edd9fc76134593bebef2de31S3Bucket3FFC6583": Object {
+      "Description": "S3 bucket for asset \\"ac7f5d00801594308615088ac65f2f0848f8cc59edd9fc76134593bebef2de31\\"",
+      "Type": "String",
+    },
+    "AssetParametersac7f5d00801594308615088ac65f2f0848f8cc59edd9fc76134593bebef2de31S3VersionKey4932657D": Object {
+      "Description": "S3 key for asset version \\"ac7f5d00801594308615088ac65f2f0848f8cc59edd9fc76134593bebef2de31\\"",
+      "Type": "String",
+    },
+  },
+  "Resources": Object {
+    "BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691": Object {
+      "DependsOn": Array [
+        "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36",
+        "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC",
+      ],
+      "Properties": Object {
+        "Code": Object {
+          "ZipFile": "exports.handler = (event, context) => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports, import/no-extraneous-dependencies
+    const s3 = new (require('aws-sdk').S3)();
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const https = require('https');
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const url = require('url');
+    log(JSON.stringify(event, undefined, 2));
+    const props = event.ResourceProperties;
+    if (event.RequestType === 'Delete') {
+        props.NotificationConfiguration = {}; // this is how you clean out notifications
+    }
+    const req = {
+        Bucket: props.BucketName,
+        NotificationConfiguration: props.NotificationConfiguration,
+    };
+    return s3.putBucketNotificationConfiguration(req, (err, data) => {
+        log({ err, data });
+        if (err) {
+            return submitResponse('FAILED', err.message + \`\\\\nMore information in CloudWatch Log Stream: \${context.logStreamName}\`);
+        }
+        else {
+            return submitResponse('SUCCESS');
+        }
+    });
+    function log(obj) {
+        console.error(event.RequestId, event.StackId, event.LogicalResourceId, obj);
+    }
+    // eslint-disable-next-line max-len
+    // adapted from https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-function-code.html#cfn-lambda-function-code-cfnresponsemodule
+    // to allow sending an error message as a reason.
+    function submitResponse(responseStatus, reason) {
+        const responseBody = JSON.stringify({
+            Status: responseStatus,
+            Reason: reason || 'See the details in CloudWatch Log Stream: ' + context.logStreamName,
+            PhysicalResourceId: event.PhysicalResourceId || event.LogicalResourceId,
+            StackId: event.StackId,
+            RequestId: event.RequestId,
+            LogicalResourceId: event.LogicalResourceId,
+            NoEcho: false,
+        });
+        log({ responseBody });
+        const parsedUrl = url.parse(event.ResponseURL);
+        const options = {
+            hostname: parsedUrl.hostname,
+            port: 443,
+            path: parsedUrl.path,
+            method: 'PUT',
+            headers: {
+                'content-type': '',
+                'content-length': responseBody.length,
+            },
+        };
+        const request = https.request(options, (r) => {
+            log({ statusCode: r.statusCode, statusMessage: r.statusMessage });
+            context.done();
+        });
+        request.on('error', (error) => {
+            log({ sendError: error });
+            context.done();
+        });
+        request.write(responseBody);
+        request.end();
+    }
+};",
+        },
+        "Description": "AWS CloudFormation handler for \\"Custom::S3BucketNotifications\\" resources (@aws-cdk/aws-s3)",
+        "Handler": "index.handler",
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs12.x",
+        "Timeout": 300,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "s3:PutBucketNotification",
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36",
+        "Roles": Array [
+          Object {
+            "Ref": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "FfmpegLayer1A967C48": Object {
+      "Properties": Object {
+        "CompatibleRuntimes": Array [
+          "python3.8",
+        ],
+        "Content": Object {
+          "S3Bucket": Object {
+            "Ref": "AssetParameters819e1c802f7a3ee062b88ee47bec19d4f4f9c0e9475221ce3d678e85581305a5S3Bucket181207DA",
+          },
+          "S3Key": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                Object {
+                  "Fn::Select": Array [
+                    0,
+                    Object {
+                      "Fn::Split": Array [
+                        "||",
+                        Object {
+                          "Ref": "AssetParameters819e1c802f7a3ee062b88ee47bec19d4f4f9c0e9475221ce3d678e85581305a5S3VersionKey842E1070",
+                        },
+                      ],
+                    },
+                  ],
+                },
+                Object {
+                  "Fn::Select": Array [
+                    1,
+                    Object {
+                      "Fn::Split": Array [
+                        "||",
+                        Object {
+                          "Ref": "AssetParameters819e1c802f7a3ee062b88ee47bec19d4f4f9c0e9475221ce3d678e85581305a5S3VersionKey842E1070",
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            ],
+          },
+        },
+        "Description": "Lambda layer for ffmpeg",
+        "LicenseInfo": "GPLv3",
+      },
+      "Type": "AWS::Lambda::LayerVersion",
+    },
+    "InputVideoBucket411CB768": Object {
+      "DeletionPolicy": "Retain",
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "InputVideoBucketAllowBucketNotificationsToTestStackVideoProcessingFnED89CD5F1EAC38D3": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "VideoProcessingFn0FC68B62",
+            "Arn",
+          ],
+        },
+        "Principal": "s3.amazonaws.com",
+        "SourceAccount": Object {
+          "Ref": "AWS::AccountId",
+        },
+        "SourceArn": Object {
+          "Fn::GetAtt": Array [
+            "InputVideoBucket411CB768",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "InputVideoBucketNotifications15DA4C12": Object {
+      "DependsOn": Array [
+        "InputVideoBucketAllowBucketNotificationsToTestStackVideoProcessingFnED89CD5F1EAC38D3",
+      ],
+      "Properties": Object {
+        "BucketName": Object {
+          "Ref": "InputVideoBucket411CB768",
+        },
+        "NotificationConfiguration": Object {
+          "LambdaFunctionConfigurations": Array [
+            Object {
+              "Events": Array [
+                "s3:ObjectCreated:Put",
+              ],
+              "Filter": Object {
+                "Key": Object {
+                  "FilterRules": Array [
+                    Object {
+                      "Name": "suffix",
+                      "Value": ".mp4",
+                    },
+                  ],
+                },
+              },
+              "LambdaFunctionArn": Object {
+                "Fn::GetAtt": Array [
+                  "VideoProcessingFn0FC68B62",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+        },
+        "ServiceToken": Object {
+          "Fn::GetAtt": Array [
+            "BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "Custom::S3BucketNotifications",
+    },
+    "OutputVideoBucket793FE4FF": Object {
+      "DeletionPolicy": "Retain",
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "VideoProcessingFn0FC68B62": Object {
+      "DependsOn": Array [
+        "VideoProcessingFnServiceRoleDefaultPolicyEAE90BCB",
+        "VideoProcessingFnServiceRole17162B39",
+      ],
+      "Properties": Object {
+        "Code": Object {
+          "S3Bucket": Object {
+            "Ref": "AssetParametersac7f5d00801594308615088ac65f2f0848f8cc59edd9fc76134593bebef2de31S3Bucket3FFC6583",
+          },
+          "S3Key": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                Object {
+                  "Fn::Select": Array [
+                    0,
+                    Object {
+                      "Fn::Split": Array [
+                        "||",
+                        Object {
+                          "Ref": "AssetParametersac7f5d00801594308615088ac65f2f0848f8cc59edd9fc76134593bebef2de31S3VersionKey4932657D",
+                        },
+                      ],
+                    },
+                  ],
+                },
+                Object {
+                  "Fn::Select": Array [
+                    1,
+                    Object {
+                      "Fn::Split": Array [
+                        "||",
+                        Object {
+                          "Ref": "AssetParametersac7f5d00801594308615088ac65f2f0848f8cc59edd9fc76134593bebef2de31S3VersionKey4932657D",
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            ],
+          },
+        },
+        "Environment": Object {
+          "Variables": Object {
+            "S3_DESTINATION_BUCKET": Object {
+              "Ref": "OutputVideoBucket793FE4FF",
+            },
+          },
+        },
+        "Handler": "index.handler",
+        "Layers": Array [
+          Object {
+            "Ref": "FfmpegLayer1A967C48",
+          },
+        ],
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "VideoProcessingFnServiceRole17162B39",
+            "Arn",
+          ],
+        },
+        "Runtime": "python3.8",
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "VideoProcessingFnServiceRole17162B39": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "VideoProcessingFnServiceRoleDefaultPolicyEAE90BCB": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+              ],
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Fn::GetAtt": Array [
+                    "InputVideoBucket411CB768",
+                    "Arn",
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "InputVideoBucket411CB768",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            Object {
+              "Action": Array [
+                "s3:DeleteObject*",
+                "s3:PutObject*",
+                "s3:Abort*",
+              ],
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Fn::GetAtt": Array [
+                    "OutputVideoBucket793FE4FF",
+                    "Arn",
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "OutputVideoBucket793FE4FF",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "VideoProcessingFnServiceRoleDefaultPolicyEAE90BCB",
+        "Roles": Array [
+          Object {
+            "Ref": "VideoProcessingFnServiceRole17162B39",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+  },
+}
+`;
