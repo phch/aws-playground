@@ -22,12 +22,12 @@ def handler(event, context):
         Params={'Bucket': bucket, 'Key': key},
         ExpiresIn=S3_SIGNED_URL_EXPIRATION)
     
-    ffmpeg_cmd = '/opt/bin/ffmpeg -i \"' + s3_signed_url_get_object + '\"' + FFMPEG_PARAMS
+    ffmpeg_cmd = '/opt/bin/ffmpeg -i \"' + s3_signed_url_get_object + '\" ' + FFMPEG_PARAMS
     cmd = shlex.split(ffmpeg_cmd)
     process = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     output_key = os.path.splitext(key)[0] + ".ts"
-    response = s3.put_object(Body=process.stdout, Bucket=S3_DESTINATION_BUCKET, Key=output_key)
+    s3.put_object(Body=process.stdout, Bucket=S3_DESTINATION_BUCKET, Key=output_key)
 
     return {
         'statusCode': 200,
