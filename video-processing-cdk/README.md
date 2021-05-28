@@ -15,8 +15,9 @@ git clone https://github.com/phch/aws-playground.git
 cd aws-playground/video-processing-cdk
 ```
 
-Set up the AWS CLI if you haven't configured it yet.
+Install AWS CDK and configure the AWS CLI.
 ```bash
+npm install -g aws-cdk
 aws configure
 ```
 
