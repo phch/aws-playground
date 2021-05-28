@@ -1,13 +1,11 @@
-import { expect as expectCDK, matchTemplate, MatchStyle } from '@aws-cdk/assert';
+import { expect as expectCDK, countResources, haveResource, SynthUtils } from '@aws-cdk/assert';
 import * as cdk from '@aws-cdk/core';
 import * as KongApiCdk from '../lib/kong-api-cdk-stack';
 
-test('Empty Stack', () => {
-    const app = new cdk.App();
-    // WHEN
-    const stack = new KongApiCdk.KongApiCdkStack(app, 'MyTestStack');
-    // THEN
-    expectCDK(stack).to(matchTemplate({
-      "Resources": {}
-    }, MatchStyle.EXACT))
+test('Matches snapshot', () => {
+  const app = new cdk.App();
+  // WHEN
+  const stack = new KongApiCdk.KongApiCdkStack(app, 'TestStack');
+  // THEN
+  expect(SynthUtils.toCloudFormation(stack)).toMatchSnapshot();
 });

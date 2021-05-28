@@ -9,12 +9,12 @@ export class KongApiCdkStack extends cdk.Stack {
     
     // Create EC2 keypair for Kong instances and store public/private key in Secrets Manager
     const key = new KeyPair(this, 'KongEc2KeyPair', {
-      name: 'KongEc2KeyPair',
+      name:`${id}KeyPair`,
       description: 'Key pair for Kong EC2 instances',
       storePublicKey: true,
     });
-
-    // Import Kong CloudFormation template with PostgresDB
+    
+    // Import Kong CloudFormation template with Postgres
     const kongCfn = new cfn_inc.CfnInclude(this, 'KongPostgresTemplate', {
       templateFile: path.join(__dirname, 'kong-postgres.template.yml'),
       preserveLogicalIds: true,
@@ -23,7 +23,7 @@ export class KongApiCdkStack extends cdk.Stack {
         'KongKeyName': key.keyPairName,
         'KongFleetDesiredSize': '2',
         'KongInstanceType': 't3.medium',
-        'KongConfigs': 'KONG_LOG_LEVEL=debug^KONG_ADMIN_LISTEN="0.0.0.0:8001, 0.0.0.0:8444 ssl"',
+        'KongConfigs': 'log_level = debug^admin_listen = 0.0.0.0:8001, 0.0.0.0:8444 ssl^admin_gui_listen = 0.0.0.0:8002, 0.0.0.0:8445 ssl',
         'DBClass': 'db.t3.medium',
         'DBHost': '', // Left blank so it creates a new DB instance
       },

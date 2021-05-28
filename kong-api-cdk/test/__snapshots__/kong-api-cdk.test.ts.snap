@@ -1,0 +1,1794 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Matches snapshot 1`] = `
+Object {
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Conditions": Object {
+    "KongPostgresTemplateConditionsCreateRDS3849530B": Object {
+      "Fn::Equals": Array [
+        "",
+        "",
+      ],
+    },
+    "KongPostgresTemplateConditionsCreateVpcResourcesD48F7ED5": Object {
+      "Fn::Equals": Array [
+        Object {
+          "Ref": "KongPostgresTemplateVpcId3492217B",
+        },
+        "",
+      ],
+    },
+    "KongPostgresTemplateConditionsExistingVpcResourcesCAAF1C33": Object {
+      "Fn::Not": Array [
+        Object {
+          "Fn::Equals": Array [
+            Object {
+              "Ref": "KongPostgresTemplateVpcId3492217B",
+            },
+            "",
+          ],
+        },
+      ],
+    },
+    "KongPostgresTemplateConditionsUseAZParameterA7BED9D5": Object {
+      "Fn::Not": Array [
+        Object {
+          "Fn::And": Array [
+            Object {
+              "Fn::Equals": Array [
+                Object {
+                  "Ref": "KongPostgresTemplateSubnet1AZ1590B3C3",
+                },
+                "",
+              ],
+            },
+            Object {
+              "Fn::Equals": Array [
+                Object {
+                  "Ref": "KongPostgresTemplateSubnet2AZDF83708E",
+                },
+                "",
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    "KongPostgresTemplateConditionsUseDbSnapshotA6234C31": Object {
+      "Fn::Not": Array [
+        Object {
+          "Fn::Equals": Array [
+            Object {
+              "Ref": "KongPostgresTemplateDBSnapshotIdentifier67515FFF",
+            },
+            "",
+          ],
+        },
+      ],
+    },
+  },
+  "Description": "Kong CloudFormation template. Template creates load balanced Kong instances with Postgres RDS instance in a new VPC or user provided VPC",
+  "Outputs": Object {
+    "KongPostgresTemplateOuputsAdminApiURL351BB2A0": Object {
+      "Description": "Kong Admin Api URL",
+      "Value": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "http://",
+            Object {
+              "Fn::If": Array [
+                "KongPostgresTemplateConditionsCreateVpcResourcesD48F7ED5",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "KongPostgresTemplateKongLoadBalancerNewVPC13A4B549",
+                    "DNSName",
+                  ],
+                },
+                Object {
+                  "Fn::GetAtt": Array [
+                    "KongPostgresTemplateKongLoadBalancerExistingVPC15576821",
+                    "DNSName",
+                  ],
+                },
+              ],
+            },
+            ":8001",
+          ],
+        ],
+      },
+    },
+    "KongPostgresTemplateOuputsAdminGuiURLE2F71C1D": Object {
+      "Description": "Kong Admin Gui URL",
+      "Value": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "http://",
+            Object {
+              "Fn::If": Array [
+                "KongPostgresTemplateConditionsCreateVpcResourcesD48F7ED5",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "KongPostgresTemplateKongLoadBalancerNewVPC13A4B549",
+                    "DNSName",
+                  ],
+                },
+                Object {
+                  "Fn::GetAtt": Array [
+                    "KongPostgresTemplateKongLoadBalancerExistingVPC15576821",
+                    "DNSName",
+                  ],
+                },
+              ],
+            },
+            ":8002",
+          ],
+        ],
+      },
+    },
+    "KongPostgresTemplateOuputsProxyURL1FCC0211": Object {
+      "Description": "Kong Proxy URL",
+      "Value": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "http://",
+            Object {
+              "Fn::If": Array [
+                "KongPostgresTemplateConditionsCreateVpcResourcesD48F7ED5",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "KongPostgresTemplateKongLoadBalancerNewVPC13A4B549",
+                    "DNSName",
+                  ],
+                },
+                Object {
+                  "Fn::GetAtt": Array [
+                    "KongPostgresTemplateKongLoadBalancerExistingVPC15576821",
+                    "DNSName",
+                  ],
+                },
+              ],
+            },
+            ":8000",
+          ],
+        ],
+      },
+    },
+  },
+  "Parameters": Object {
+    "AssetParameters2026c46dd5ea09f3b1ded7d5ac3af90e3c5401fb9d7f98f9fdd109327e915748ArtifactHash7E1B52CC": Object {
+      "Description": "Artifact hash for asset \\"2026c46dd5ea09f3b1ded7d5ac3af90e3c5401fb9d7f98f9fdd109327e915748\\"",
+      "Type": "String",
+    },
+    "AssetParameters2026c46dd5ea09f3b1ded7d5ac3af90e3c5401fb9d7f98f9fdd109327e915748S3Bucket5AA3023B": Object {
+      "Description": "S3 bucket for asset \\"2026c46dd5ea09f3b1ded7d5ac3af90e3c5401fb9d7f98f9fdd109327e915748\\"",
+      "Type": "String",
+    },
+    "AssetParameters2026c46dd5ea09f3b1ded7d5ac3af90e3c5401fb9d7f98f9fdd109327e915748S3VersionKey9FC92549": Object {
+      "Description": "S3 key for asset version \\"2026c46dd5ea09f3b1ded7d5ac3af90e3c5401fb9d7f98f9fdd109327e915748\\"",
+      "Type": "String",
+    },
+    "KongPostgresTemplateDBAllocatedStorage25F17029": Object {
+      "ConstraintDescription": "must be between 5+",
+      "Default": "5",
+      "Description": "The size of the database (Gb)",
+      "MaxValue": "6144",
+      "MinValue": "5",
+      "Type": "Number",
+    },
+    "KongPostgresTemplateDBNameB387F8AC": Object {
+      "AllowedPattern": "[a-zA-Z][a-zA-Z0-9]*",
+      "ConstraintDescription": "must begin with a letter and contain only alphanumeric characters.",
+      "Default": "kong",
+      "Description": "The database name",
+      "MinLength": "1",
+      "Type": "String",
+    },
+    "KongPostgresTemplateDBPort2A3A5B87": Object {
+      "AllowedPattern": "[0-9]+",
+      "ConstraintDescription": "must be a valid port number",
+      "Default": "5432",
+      "Description": "Conditional- required if DBHost provided. The database port",
+      "Type": "String",
+    },
+    "KongPostgresTemplateDBPublicAccess86BBE0ED": Object {
+      "AllowedValues": Array [
+        true,
+        false,
+      ],
+      "Default": false,
+      "Description": "Allow Public access to database",
+      "Type": "String",
+    },
+    "KongPostgresTemplateDBSnapshotIdentifier67515FFF": Object {
+      "Default": "",
+      "Description": "Optional- The RDS snapshot name to restore to the new DB instance.",
+      "Type": "String",
+    },
+    "KongPostgresTemplateDBStorageEncryptedA938FDEA": Object {
+      "AllowedValues": Array [
+        true,
+        false,
+      ],
+      "Default": false,
+      "Description": "Specifies whether the DB instance is encrypted",
+      "Type": "String",
+    },
+    "KongPostgresTemplateDBStorageType5F305018": Object {
+      "AllowedValues": Array [
+        "gp2",
+        "standard",
+      ],
+      "Default": "gp2",
+      "Description": "Storage Type for RDS volume",
+      "Type": "String",
+    },
+    "KongPostgresTemplateDBUsername84CDE25B": Object {
+      "AllowedPattern": "[a-zA-Z][a-zA-Z0-9]*",
+      "ConstraintDescription": "must begin with a letter and contain only alphanumeric characters.",
+      "Default": "kong",
+      "Description": "The database admin account username",
+      "MinLength": "1",
+      "Type": "String",
+    },
+    "KongPostgresTemplateDBVersion2DC21574": Object {
+      "AllowedValues": Array [
+        12.4,
+        11.9,
+        11.8,
+      ],
+      "Default": 12.4,
+      "Description": "Aurora Postgres version",
+      "Type": "String",
+    },
+    "KongPostgresTemplateKongAdminApiAccess8726063F": Object {
+      "AllowedPattern": "(\\\\d{1,3})\\\\.(\\\\d{1,3})\\\\.(\\\\d{1,3})\\\\.(\\\\d{1,3})/(\\\\d{1,2})",
+      "ConstraintDescription": "must be a valid IP CIDR range of the form x.x.x.x/x.",
+      "Default": "0.0.0.0/0",
+      "Description": "The IP address range that can be used to access the Kong Admin Api port 8001",
+      "MaxLength": "18",
+      "MinLength": "9",
+      "Type": "String",
+    },
+    "KongPostgresTemplateKongAdminGuiAccess8B9C36C0": Object {
+      "AllowedPattern": "(\\\\d{1,3})\\\\.(\\\\d{1,3})\\\\.(\\\\d{1,3})\\\\.(\\\\d{1,3})/(\\\\d{1,2})",
+      "ConstraintDescription": "must be a valid IP CIDR range of the form x.x.x.x/x.",
+      "Default": "0.0.0.0/0",
+      "Description": "The IP address range that can be used to access the Kong Admin Gui port 8002",
+      "MaxLength": "18",
+      "MinLength": "9",
+      "Type": "String",
+    },
+    "KongPostgresTemplateKongAmiIdA4CED4A2": Object {
+      "Default": "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2",
+      "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
+    },
+    "KongPostgresTemplateKongBootstrapMigrationA5DC52DD": Object {
+      "AllowedValues": Array [
+        "true",
+        "false",
+      ],
+      "Default": "true",
+      "Description": "Run the Kong bootstrap migrations by default, set it to false to disable migrations.",
+      "Type": "String",
+    },
+    "KongPostgresTemplateKongFleetMaxSize2A9EB4E4": Object {
+      "Default": "2",
+      "Description": "Max Number of Kong instances",
+      "MinValue": "1",
+      "Type": "Number",
+    },
+    "KongPostgresTemplateKongProxyAccessE3D2E492": Object {
+      "AllowedPattern": "(\\\\d{1,3})\\\\.(\\\\d{1,3})\\\\.(\\\\d{1,3})\\\\.(\\\\d{1,3})/(\\\\d{1,2})",
+      "ConstraintDescription": "must be a valid IP CIDR range of the form x.x.x.x/x.",
+      "Default": "0.0.0.0/0",
+      "Description": "The IP address range that can be used to access the Kong proxy port 8000",
+      "MaxLength": "18",
+      "MinLength": "9",
+      "Type": "String",
+    },
+    "KongPostgresTemplateSSHLocationDFF9C50C": Object {
+      "AllowedPattern": "(\\\\d{1,3})\\\\.(\\\\d{1,3})\\\\.(\\\\d{1,3})\\\\.(\\\\d{1,3})/(\\\\d{1,2})",
+      "ConstraintDescription": "must be a valid IP CIDR range of the form x.x.x.x/x.",
+      "Default": "0.0.0.0/0",
+      "Description": "The IP address range that can be used to SSH to the Kong and Cassandra EC2 instances",
+      "MaxLength": "18",
+      "MinLength": "9",
+      "Type": "String",
+    },
+    "KongPostgresTemplateSubnet1AZ1590B3C3": Object {
+      "Default": "",
+      "Description": "Conditional- required if VpcId provided or if *-1a AZ not supported by account. Existing VPC Subnet 1 AvailabilityZone",
+      "Type": "String",
+    },
+    "KongPostgresTemplateSubnet2AZDF83708E": Object {
+      "Default": "",
+      "Description": "Conditional- required if VpcId provided or *-1b AZ not supported by account or if Subnet1AZ provided. Existing VPC Subnet 2 AvailabilityZone",
+      "Type": "String",
+    },
+    "KongPostgresTemplateSubnetId176E5C133": Object {
+      "Default": "",
+      "Description": "Conditional- required if VpcId provided. Existing VPC Subnet Id 1 where ECS instances will run",
+      "Type": "String",
+    },
+    "KongPostgresTemplateSubnetId28CAA8108": Object {
+      "Default": "",
+      "Description": "Conditional- required if VpcId provided. Existing VPC Subnet 2 Id where ECS instances will run",
+      "Type": "String",
+    },
+    "KongPostgresTemplateVpcId3492217B": Object {
+      "AllowedPattern": "^(?:vpc-[0-9a-f]{8}|)$",
+      "ConstraintDescription": "VPC ID must begin with 'vpc-' or leave blank to have a new VPC created",
+      "Default": "",
+      "Description": "Optional - VPC Id of existing VPC. Leave blank to have a new VPC created",
+      "Type": "String",
+    },
+  },
+  "Resources": Object {
+    "EC2KeyNameManagerLambdaBE629145": Object {
+      "DependsOn": Array [
+        "EC2KeyPairManagerRoleB243C519",
+      ],
+      "Properties": Object {
+        "Code": Object {
+          "S3Bucket": Object {
+            "Ref": "AssetParameters2026c46dd5ea09f3b1ded7d5ac3af90e3c5401fb9d7f98f9fdd109327e915748S3Bucket5AA3023B",
+          },
+          "S3Key": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                Object {
+                  "Fn::Select": Array [
+                    0,
+                    Object {
+                      "Fn::Split": Array [
+                        "||",
+                        Object {
+                          "Ref": "AssetParameters2026c46dd5ea09f3b1ded7d5ac3af90e3c5401fb9d7f98f9fdd109327e915748S3VersionKey9FC92549",
+                        },
+                      ],
+                    },
+                  ],
+                },
+                Object {
+                  "Fn::Select": Array [
+                    1,
+                    Object {
+                      "Fn::Split": Array [
+                        "||",
+                        Object {
+                          "Ref": "AssetParameters2026c46dd5ea09f3b1ded7d5ac3af90e3c5401fb9d7f98f9fdd109327e915748S3VersionKey9FC92549",
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            ],
+          },
+        },
+        "Description": "Custom CFN resource: Manage EC2 Key Pairs",
+        "FunctionName": "TestStack-CFN-Resource-Custom-EC2-Key-Pair",
+        "Handler": "index.handler",
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "EC2KeyPairManagerRoleB243C519",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs14.x",
+        "Timeout": 180,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "EC2KeyPairManagerPolicyEBBC1576": Object {
+      "Properties": Object {
+        "Description": "Used by Lambda CFN-Resource-Custom-EC2-Key-Pair, which is a custom CFN resource, managing EC2 Key Pairs",
+        "ManagedPolicyName": "TestStack-CFN-Resource-Custom-EC2-Key-Pair",
+        "Path": "/",
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "ec2:DescribeKeyPairs",
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            Object {
+              "Action": Array [
+                "ec2:CreateKeyPair",
+                "ec2:CreateTags",
+              ],
+              "Condition": Object {
+                "StringLike": Object {
+                  "aws:RequestTag/CreatedByCfnCustomResource": "CFN::Resource::Custom::EC2-Key-Pair",
+                },
+              },
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::Join": Array [
+                  "",
+                  Array [
+                    "arn:",
+                    Object {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":ec2:*:*:key-pair/*",
+                  ],
+                ],
+              },
+            },
+            Object {
+              "Action": Array [
+                "ec2:CreateTags",
+                "ec2:DeleteKeyPair",
+                "ec2:DeleteTags",
+              ],
+              "Condition": Object {
+                "StringLike": Object {
+                  "ec2:ResourceTag/CreatedByCfnCustomResource": "CFN::Resource::Custom::EC2-Key-Pair",
+                },
+              },
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::Join": Array [
+                  "",
+                  Array [
+                    "arn:",
+                    Object {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":ec2:*:*:key-pair/*",
+                  ],
+                ],
+              },
+            },
+            Object {
+              "Action": "secretsmanager:ListSecrets",
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            Object {
+              "Action": Array [
+                "secretsmanager:CreateSecret",
+                "secretsmanager:TagResource",
+              ],
+              "Condition": Object {
+                "StringLike": Object {
+                  "aws:RequestTag/CreatedByCfnCustomResource": "CFN::Resource::Custom::EC2-Key-Pair",
+                },
+              },
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            Object {
+              "Action": Array [
+                "secretsmanager:DeleteResourcePolicy",
+                "secretsmanager:DeleteSecret",
+                "secretsmanager:DescribeSecret",
+                "secretsmanager:GetResourcePolicy",
+                "secretsmanager:GetSecretValue",
+                "secretsmanager:ListSecretVersionIds",
+                "secretsmanager:PutResourcePolicy",
+                "secretsmanager:PutSecretValue",
+                "secretsmanager:RestoreSecret",
+                "secretsmanager:UntagResource",
+                "secretsmanager:UpdateSecret",
+                "secretsmanager:UpdateSecretVersionStage",
+              ],
+              "Condition": Object {
+                "StringLike": Object {
+                  "secretsmanager:ResourceTag/CreatedByCfnCustomResource": "CFN::Resource::Custom::EC2-Key-Pair",
+                },
+              },
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::ManagedPolicy",
+    },
+    "EC2KeyPairManagerRoleB243C519": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Description": "Used by Lambda CFN-Resource-Custom-EC2-Key-Pair, which is a custom CFN resource, managing EC2 Key Pairs",
+        "ManagedPolicyArns": Array [
+          Object {
+            "Ref": "EC2KeyPairManagerPolicyEBBC1576",
+          },
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+        "RoleName": "TestStack-CFN-Resource-Custom-EC2-Key-Pair",
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "KongEc2KeyPairEC2KeyPairKongEc2KeyPair7A524526": Object {
+      "DeletionPolicy": "Delete",
+      "Properties": Object {
+        "Description": "Key pair for Kong EC2 instances",
+        "ExposePublicKey": false,
+        "KmsPrivate": "alias/aws/secretsmanager",
+        "KmsPublic": "alias/aws/secretsmanager",
+        "Name": "KongEc2KeyPair",
+        "RemoveKeySecretsAfterDays": 0,
+        "SecretPrefix": "ec2-ssh-key/",
+        "ServiceToken": Object {
+          "Fn::GetAtt": Array [
+            "EC2KeyNameManagerLambdaBE629145",
+            "Arn",
+          ],
+        },
+        "StackName": "TestStack",
+        "StorePublicKey": true,
+        "Tags": Object {
+          "CreatedByCfnCustomResource": "CFN::Resource::Custom::EC2-Key-Pair",
+        },
+      },
+      "Type": "Custom::EC2-Key-Pair",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "KongPostgresTemplateASGUpdateProfileD57D26DE": Object {
+      "DependsOn": Array [
+        "KongEc2KeyPairEC2KeyPairKongEc2KeyPair7A524526",
+      ],
+      "Properties": Object {
+        "Path": "/",
+        "Roles": Array [
+          Object {
+            "Ref": "KongPostgresTemplateASGUpdateRoleFD2E9C87",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::InstanceProfile",
+    },
+    "KongPostgresTemplateASGUpdateRoleFD2E9C87": Object {
+      "DependsOn": Array [
+        "KongEc2KeyPairEC2KeyPairKongEc2KeyPair7A524526",
+      ],
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "sts:AssumeRole",
+              ],
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": Array [
+                  "ec2.amazonaws.com",
+                ],
+              },
+            },
+          ],
+        },
+        "Path": "/",
+        "Policies": Array [
+          Object {
+            "PolicyDocument": Object {
+              "Statement": Array [
+                Object {
+                  "Action": Array [
+                    "ec2:Describe*",
+                    "cloudformation:DescribeStackResource",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "*",
+                },
+                Object {
+                  "Action": "autoscaling:UpdateAutoScalingGroup",
+                  "Effect": "Allow",
+                  "Resource": "*",
+                },
+                Object {
+                  "Action": "secretsmanager:GetSecretValue",
+                  "Effect": "Allow",
+                  "Resource": Object {
+                    "Ref": "KongPostgresTemplateRdsDBSecret5DFEE0FC",
+                  },
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "ASGUpdateRole",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "KongPostgresTemplateAttachGateway18E9229C": Object {
+      "Condition": "KongPostgresTemplateConditionsCreateVpcResourcesD48F7ED5",
+      "DependsOn": Array [
+        "KongEc2KeyPairEC2KeyPairKongEc2KeyPair7A524526",
+      ],
+      "Properties": Object {
+        "InternetGatewayId": Object {
+          "Ref": "KongPostgresTemplateInternetGateway847691D9",
+        },
+        "VpcId": Object {
+          "Ref": "KongPostgresTemplateVPC63C71280",
+        },
+      },
+      "Type": "AWS::EC2::VPCGatewayAttachment",
+    },
+    "KongPostgresTemplateDBSecurityGroupB7D9B76C": Object {
+      "Condition": "KongPostgresTemplateConditionsCreateRDS3849530B",
+      "DependsOn": Array [
+        "KongEc2KeyPairEC2KeyPairKongEc2KeyPair7A524526",
+      ],
+      "Properties": Object {
+        "GroupDescription": "Database security groups",
+        "SecurityGroupEgress": Array [
+          Object {
+            "CidrIp": "0.0.0.0/0",
+            "FromPort": 1,
+            "IpProtocol": "tcp",
+            "ToPort": 65535,
+          },
+        ],
+        "SecurityGroupIngress": Array [
+          Object {
+            "FromPort": 3306,
+            "IpProtocol": "tcp",
+            "SourceSecurityGroupId": Object {
+              "Ref": "KongPostgresTemplateKongSecurityGroup815C9AB9",
+            },
+            "ToPort": 3306,
+          },
+          Object {
+            "CidrIp": Object {
+              "Ref": "KongPostgresTemplateSSHLocationDFF9C50C",
+            },
+            "FromPort": 22,
+            "IpProtocol": "tcp",
+            "ToPort": 22,
+          },
+        ],
+        "VpcId": Object {
+          "Fn::If": Array [
+            "KongPostgresTemplateConditionsCreateVpcResourcesD48F7ED5",
+            Object {
+              "Ref": "KongPostgresTemplateVPC63C71280",
+            },
+            Object {
+              "Ref": "KongPostgresTemplateVpcId3492217B",
+            },
+          ],
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "KongPostgresTemplateDBSubnetGroupA8506341": Object {
+      "Condition": "KongPostgresTemplateConditionsCreateRDS3849530B",
+      "DependsOn": Array [
+        "KongEc2KeyPairEC2KeyPairKongEc2KeyPair7A524526",
+      ],
+      "Properties": Object {
+        "DBSubnetGroupDescription": "Subnets available for the RDS DB Instance",
+        "SubnetIds": Object {
+          "Fn::If": Array [
+            "KongPostgresTemplateConditionsCreateVpcResourcesD48F7ED5",
+            Array [
+              Object {
+                "Ref": "KongPostgresTemplatePublicSubnet1233B6F23",
+              },
+              Object {
+                "Ref": "KongPostgresTemplatePublicSubnet223EA2D26",
+              },
+            ],
+            Array [
+              Object {
+                "Ref": "KongPostgresTemplateSubnetId176E5C133",
+              },
+              Object {
+                "Ref": "KongPostgresTemplateSubnetId28CAA8108",
+              },
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::RDS::DBSubnetGroup",
+    },
+    "KongPostgresTemplateDelayFunction9E718121": Object {
+      "DependsOn": Array [
+        "KongEc2KeyPairEC2KeyPairKongEc2KeyPair7A524526",
+      ],
+      "Properties": Object {
+        "Code": Object {
+          "ZipFile": "import cfnresponse
+import time
+def handler(event, context):
+  delayTime = int(event['ResourceProperties']['DelayTime'])
+  time.sleep(delayTime)
+  cfnresponse.send(event, context, cfnresponse.SUCCESS, {})
+",
+        },
+        "Handler": "index.handler",
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "KongPostgresTemplateDelayFunctionRole38840800",
+            "Arn",
+          ],
+        },
+        "Runtime": "python3.8",
+        "Timeout": 300,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "KongPostgresTemplateDelayFunctionRole38840800": Object {
+      "DependsOn": Array [
+        "KongEc2KeyPairEC2KeyPairKongEc2KeyPair7A524526",
+      ],
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "KongPostgresTemplateIngress7946076AF83A": Object {
+      "DependsOn": Array [
+        "KongEc2KeyPairEC2KeyPairKongEc2KeyPair7A524526",
+      ],
+      "Properties": Object {
+        "FromPort": 7946,
+        "GroupId": Object {
+          "Fn::GetAtt": Array [
+            "KongPostgresTemplateKongSecurityGroup815C9AB9",
+            "GroupId",
+          ],
+        },
+        "IpProtocol": "tcp",
+        "SourceSecurityGroupId": Object {
+          "Fn::GetAtt": Array [
+            "KongPostgresTemplateKongSecurityGroup815C9AB9",
+            "GroupId",
+          ],
+        },
+        "ToPort": 7946,
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress",
+    },
+    "KongPostgresTemplateInternetGateway847691D9": Object {
+      "Condition": "KongPostgresTemplateConditionsCreateVpcResourcesD48F7ED5",
+      "DependsOn": Array [
+        "KongEc2KeyPairEC2KeyPairKongEc2KeyPair7A524526",
+      ],
+      "Properties": Object {
+        "Tags": Array [
+          Object {
+            "Key": "Application",
+            "Value": Object {
+              "Ref": "AWS::StackId",
+            },
+          },
+          Object {
+            "Key": "Network",
+            "Value": "Public",
+          },
+        ],
+      },
+      "Type": "AWS::EC2::InternetGateway",
+    },
+    "KongPostgresTemplateKongLaunchConfigE427EA65": Object {
+      "DependsOn": Array [
+        "KongEc2KeyPairEC2KeyPairKongEc2KeyPair7A524526",
+      ],
+      "Properties": Object {
+        "AssociatePublicIpAddress": true,
+        "IamInstanceProfile": Object {
+          "Ref": "KongPostgresTemplateASGUpdateProfileD57D26DE",
+        },
+        "ImageId": Object {
+          "Ref": "KongPostgresTemplateKongAmiIdA4CED4A2",
+        },
+        "InstanceType": "t3.medium",
+        "KeyName": Object {
+          "Fn::GetAtt": Array [
+            "KongEc2KeyPairEC2KeyPairKongEc2KeyPair7A524526",
+            "KeyPairName",
+          ],
+        },
+        "SecurityGroups": Array [
+          Object {
+            "Ref": "KongPostgresTemplateKongSecurityGroup815C9AB9",
+          },
+        ],
+        "UserData": Object {
+          "Fn::Base64": Object {
+            "Fn::Sub": Array [
+              "#!/bin/bash
+yum update -y aws-cfn-bootstrap
+echo '* soft nofile 65000' >> /etc/security/limits.conf
+echo '* hard nofile 65000' >> /etc/security/limits.conf
+
+echo '[kong] add Kong to yum repository'
+echo '
+[kong.repo]
+name = kong-rpm-repository
+baseurl = https://download.konghq.com/gateway-2.x-amazonlinux-2/
+enabled = 1
+gpgcheck = 0
+' > /etc/yum.repos.d/kong.repo
+
+echo '[kong] install Kong'
+kong_version=
+if [ \\"$kong_version\\" != \\"\\" ]
+then
+  kong_version=\\"-$kong_version\\"
+fi
+yum update -y
+yum install -y jq
+yum install kong-enterprise-edition$kong_version -y
+chown ec2-user /usr/local/kong
+if [ \\"$?\\" -ne \\"0\\" ]
+then
+  /opt/aws/bin/cfn-signal -e 1 --stack \${AWS::StackName} --resource KongScalingGroup --region \${AWS::Region} --reason \\"failed to install kong-enterprise-edition$kong_version\\" 
+  echo \\"[kong] failed to install kong-enterprise-edition$kong_version, exiting...\\" 
+  exit
+fi
+
+echo '[kong] prepare Kong configuration file'
+cp /etc/kong/kong.conf.default /etc/kong/kong.conf
+kong_pg_secret=$(aws secretsmanager get-secret-value --secret-id \${KongPostgresTemplateRdsDBSecret5DFEE0FC} --query SecretString --region \${AWS::Region} --output text)
+kong_pg_user=$(echo $kong_pg_secret | jq -r .username)
+kong_pg_password=$(echo $kong_pg_secret | jq -r .password)
+kong_admin_api_uri=http://$(curl http://169.254.169.254/latest/meta-data/public-ipv4):8001
+kong_admin_gui_url=http://$(curl http://169.254.169.254/latest/meta-data/public-ipv4):8002
+echo \\"
+pg_host = \${KongPgHost}
+pg_port = \${KongPgPort}
+pg_database = \${KongPostgresTemplateDBNameB387F8AC}
+pg_user = $kong_pg_user
+pg_password = $kong_pg_password
+admin_api_uri = $kong_admin_api_uri
+admin_gui_url = $kong_admin_gui_url
+\${KongConfig}
+\\" >> /etc/kong/kong.conf
+
+kong_migrations=\${KongPostgresTemplateKongBootstrapMigrationA5DC52DD}
+if [ \\"$kong_migrations\\" == \\"true\\" ]
+then
+  echo '[kong] starting migrations...'
+  su ec2-user -s /bin/sh -c '/usr/local/bin/kong migrations bootstrap --v'
+fi
+su ec2-user -s /bin/sh -c '/usr/local/bin/kong start --v'
+if ! /usr/local/bin/kong health --v; then
+  echo '[kong] failed to start kong, exiting...'
+  /opt/aws/bin/cfn-signal -e 1 --stack \${AWS::StackName} --resource KongScalingGroup --region \${AWS::Region} --reason \\"Failed to start Kong\\" 
+  exit
+fi
+/opt/aws/bin/cfn-signal -e 0 --stack \${AWS::StackName} --resource KongScalingGroup --region \${AWS::Region} --reason \\"Kong setup completed\\"",
+              Object {
+                "KongConfig": Object {
+                  "Fn::Join": Array [
+                    "
+",
+                    Array [
+                      "log_level=debug",
+                    ],
+                  ],
+                },
+                "KongPgHost": Object {
+                  "Fn::If": Array [
+                    "KongPostgresTemplateConditionsCreateRDS3849530B",
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "KongPostgresTemplateRdsDBCluster5669B15F",
+                        "Endpoint.Address",
+                      ],
+                    },
+                    "",
+                  ],
+                },
+                "KongPgPort": Object {
+                  "Fn::If": Array [
+                    "KongPostgresTemplateConditionsCreateRDS3849530B",
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "KongPostgresTemplateRdsDBCluster5669B15F",
+                        "Endpoint.Port",
+                      ],
+                    },
+                    Object {
+                      "Ref": "KongPostgresTemplateDBPort2A3A5B87",
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+        },
+      },
+      "Type": "AWS::AutoScaling::LaunchConfiguration",
+    },
+    "KongPostgresTemplateKongLoadBalancerAdminApiListenerExistingVPC5DEAC54B": Object {
+      "Condition": "KongPostgresTemplateConditionsExistingVpcResourcesCAAF1C33",
+      "DependsOn": Array [
+        "KongEc2KeyPairEC2KeyPairKongEc2KeyPair7A524526",
+      ],
+      "Properties": Object {
+        "DefaultActions": Array [
+          Object {
+            "ForwardConfig": Object {
+              "TargetGroups": Array [
+                Object {
+                  "TargetGroupArn": Object {
+                    "Ref": "KongPostgresTemplateLoadBalancerAdminApiTargetGroupE5205E21",
+                  },
+                },
+              ],
+            },
+            "Type": "forward",
+          },
+        ],
+        "LoadBalancerArn": Object {
+          "Ref": "KongPostgresTemplateKongLoadBalancerExistingVPC15576821",
+        },
+        "Port": 8001,
+        "Protocol": "HTTP",
+      },
+      "Type": "AWS::ElasticLoadBalancingV2::Listener",
+    },
+    "KongPostgresTemplateKongLoadBalancerAdminApiListenerNewVPCE217A664": Object {
+      "Condition": "KongPostgresTemplateConditionsCreateVpcResourcesD48F7ED5",
+      "DependsOn": Array [
+        "KongEc2KeyPairEC2KeyPairKongEc2KeyPair7A524526",
+      ],
+      "Properties": Object {
+        "DefaultActions": Array [
+          Object {
+            "ForwardConfig": Object {
+              "TargetGroups": Array [
+                Object {
+                  "TargetGroupArn": Object {
+                    "Ref": "KongPostgresTemplateLoadBalancerAdminApiTargetGroupE5205E21",
+                  },
+                },
+              ],
+            },
+            "Type": "forward",
+          },
+        ],
+        "LoadBalancerArn": Object {
+          "Ref": "KongPostgresTemplateKongLoadBalancerNewVPC13A4B549",
+        },
+        "Port": 8001,
+        "Protocol": "HTTP",
+      },
+      "Type": "AWS::ElasticLoadBalancingV2::Listener",
+    },
+    "KongPostgresTemplateKongLoadBalancerAdminGuiListenerExistingVPC1535577E": Object {
+      "Condition": "KongPostgresTemplateConditionsExistingVpcResourcesCAAF1C33",
+      "DependsOn": Array [
+        "KongEc2KeyPairEC2KeyPairKongEc2KeyPair7A524526",
+      ],
+      "Properties": Object {
+        "DefaultActions": Array [
+          Object {
+            "ForwardConfig": Object {
+              "TargetGroups": Array [
+                Object {
+                  "TargetGroupArn": Object {
+                    "Ref": "KongPostgresTemplateLoadBalancerAdminGuiTargetGroup67332DC5",
+                  },
+                },
+              ],
+            },
+            "Type": "forward",
+          },
+        ],
+        "LoadBalancerArn": Object {
+          "Ref": "KongPostgresTemplateKongLoadBalancerExistingVPC15576821",
+        },
+        "Port": 8002,
+        "Protocol": "HTTP",
+      },
+      "Type": "AWS::ElasticLoadBalancingV2::Listener",
+    },
+    "KongPostgresTemplateKongLoadBalancerAdminGuiListenerNewVPCE4E85745": Object {
+      "Condition": "KongPostgresTemplateConditionsCreateVpcResourcesD48F7ED5",
+      "DependsOn": Array [
+        "KongEc2KeyPairEC2KeyPairKongEc2KeyPair7A524526",
+      ],
+      "Properties": Object {
+        "DefaultActions": Array [
+          Object {
+            "ForwardConfig": Object {
+              "TargetGroups": Array [
+                Object {
+                  "TargetGroupArn": Object {
+                    "Ref": "KongPostgresTemplateLoadBalancerAdminGuiTargetGroup67332DC5",
+                  },
+                },
+              ],
+            },
+            "Type": "forward",
+          },
+        ],
+        "LoadBalancerArn": Object {
+          "Ref": "KongPostgresTemplateKongLoadBalancerNewVPC13A4B549",
+        },
+        "Port": 8002,
+        "Protocol": "HTTP",
+      },
+      "Type": "AWS::ElasticLoadBalancingV2::Listener",
+    },
+    "KongPostgresTemplateKongLoadBalancerExistingVPC15576821": Object {
+      "Condition": "KongPostgresTemplateConditionsExistingVpcResourcesCAAF1C33",
+      "DependsOn": Array [
+        "KongEc2KeyPairEC2KeyPairKongEc2KeyPair7A524526",
+      ],
+      "Properties": Object {
+        "IpAddressType": "ipv4",
+        "Scheme": "internet-facing",
+        "SecurityGroups": Array [
+          Object {
+            "Ref": "KongPostgresTemplateLoadBalancerSecurityGroup16387B8F",
+          },
+        ],
+        "SubnetMappings": Array [
+          Object {
+            "SubnetId": Object {
+              "Ref": "KongPostgresTemplateSubnetId176E5C133",
+            },
+          },
+          Object {
+            "SubnetId": Object {
+              "Ref": "KongPostgresTemplateSubnetId28CAA8108",
+            },
+          },
+        ],
+        "Type": "application",
+      },
+      "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+    },
+    "KongPostgresTemplateKongLoadBalancerNewVPC13A4B549": Object {
+      "Condition": "KongPostgresTemplateConditionsCreateVpcResourcesD48F7ED5",
+      "DependsOn": Array [
+        "KongEc2KeyPairEC2KeyPairKongEc2KeyPair7A524526",
+      ],
+      "Properties": Object {
+        "IpAddressType": "ipv4",
+        "Scheme": "internet-facing",
+        "SecurityGroups": Array [
+          Object {
+            "Ref": "KongPostgresTemplateLoadBalancerSecurityGroup16387B8F",
+          },
+        ],
+        "SubnetMappings": Array [
+          Object {
+            "SubnetId": Object {
+              "Ref": "KongPostgresTemplatePublicSubnet1233B6F23",
+            },
+          },
+          Object {
+            "SubnetId": Object {
+              "Ref": "KongPostgresTemplatePublicSubnet223EA2D26",
+            },
+          },
+        ],
+        "Type": "application",
+      },
+      "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+    },
+    "KongPostgresTemplateKongLoadBalancerProxyListenerExistingVPC0D1B664D": Object {
+      "Condition": "KongPostgresTemplateConditionsExistingVpcResourcesCAAF1C33",
+      "DependsOn": Array [
+        "KongEc2KeyPairEC2KeyPairKongEc2KeyPair7A524526",
+      ],
+      "Properties": Object {
+        "DefaultActions": Array [
+          Object {
+            "ForwardConfig": Object {
+              "TargetGroups": Array [
+                Object {
+                  "TargetGroupArn": Object {
+                    "Ref": "KongPostgresTemplateLoadBalancerProxyTargetGroup37559BD7",
+                  },
+                },
+              ],
+            },
+            "Type": "forward",
+          },
+        ],
+        "LoadBalancerArn": Object {
+          "Ref": "KongPostgresTemplateKongLoadBalancerExistingVPC15576821",
+        },
+        "Port": 8000,
+        "Protocol": "HTTP",
+      },
+      "Type": "AWS::ElasticLoadBalancingV2::Listener",
+    },
+    "KongPostgresTemplateKongLoadBalancerProxyListenerNewVPCDD97062F": Object {
+      "Condition": "KongPostgresTemplateConditionsCreateVpcResourcesD48F7ED5",
+      "DependsOn": Array [
+        "KongEc2KeyPairEC2KeyPairKongEc2KeyPair7A524526",
+      ],
+      "Properties": Object {
+        "DefaultActions": Array [
+          Object {
+            "ForwardConfig": Object {
+              "TargetGroups": Array [
+                Object {
+                  "TargetGroupArn": Object {
+                    "Ref": "KongPostgresTemplateLoadBalancerProxyTargetGroup37559BD7",
+                  },
+                },
+              ],
+            },
+            "Type": "forward",
+          },
+        ],
+        "LoadBalancerArn": Object {
+          "Ref": "KongPostgresTemplateKongLoadBalancerNewVPC13A4B549",
+        },
+        "Port": 8000,
+        "Protocol": "HTTP",
+      },
+      "Type": "AWS::ElasticLoadBalancingV2::Listener",
+    },
+    "KongPostgresTemplateKongScalingGroupA0FF59C8": Object {
+      "CreationPolicy": Object {
+        "ResourceSignal": Object {
+          "Count": 1,
+          "Timeout": "PT15M",
+        },
+      },
+      "DependsOn": Array [
+        "KongEc2KeyPairEC2KeyPairKongEc2KeyPair7A524526",
+        "KongPostgresTemplateWaitForRdsConfigDelayF132A297",
+      ],
+      "Properties": Object {
+        "AvailabilityZones": Object {
+          "Fn::If": Array [
+            "KongPostgresTemplateConditionsCreateVpcResourcesD48F7ED5",
+            Array [
+              Object {
+                "Fn::GetAtt": Array [
+                  "KongPostgresTemplatePublicSubnet1233B6F23",
+                  "AvailabilityZone",
+                ],
+              },
+              Object {
+                "Fn::GetAtt": Array [
+                  "KongPostgresTemplatePublicSubnet223EA2D26",
+                  "AvailabilityZone",
+                ],
+              },
+            ],
+            Array [
+              Object {
+                "Ref": "KongPostgresTemplateSubnet1AZ1590B3C3",
+              },
+              Object {
+                "Ref": "KongPostgresTemplateSubnet2AZDF83708E",
+              },
+            ],
+          ],
+        },
+        "DesiredCapacity": "1",
+        "LaunchConfigurationName": Object {
+          "Ref": "KongPostgresTemplateKongLaunchConfigE427EA65",
+        },
+        "MaxSize": Object {
+          "Ref": "KongPostgresTemplateKongFleetMaxSize2A9EB4E4",
+        },
+        "MinSize": "1",
+        "Tags": Array [
+          Object {
+            "Key": "Name",
+            "PropagateAtLaunch": true,
+            "Value": Object {
+              "Ref": "AWS::StackId",
+            },
+          },
+        ],
+        "TargetGroupARNs": Array [
+          Object {
+            "Ref": "KongPostgresTemplateLoadBalancerProxyTargetGroup37559BD7",
+          },
+          Object {
+            "Ref": "KongPostgresTemplateLoadBalancerAdminApiTargetGroupE5205E21",
+          },
+          Object {
+            "Ref": "KongPostgresTemplateLoadBalancerAdminGuiTargetGroup67332DC5",
+          },
+        ],
+        "VPCZoneIdentifier": Object {
+          "Fn::If": Array [
+            "KongPostgresTemplateConditionsCreateVpcResourcesD48F7ED5",
+            Array [
+              Object {
+                "Fn::Join": Array [
+                  ",",
+                  Array [
+                    Object {
+                      "Ref": "KongPostgresTemplatePublicSubnet1233B6F23",
+                    },
+                    Object {
+                      "Ref": "KongPostgresTemplatePublicSubnet223EA2D26",
+                    },
+                  ],
+                ],
+              },
+            ],
+            Array [
+              Object {
+                "Ref": "KongPostgresTemplateSubnetId176E5C133",
+              },
+              Object {
+                "Ref": "KongPostgresTemplateSubnetId28CAA8108",
+              },
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
+    },
+    "KongPostgresTemplateKongSecurityGroup815C9AB9": Object {
+      "DependsOn": Array [
+        "KongEc2KeyPairEC2KeyPairKongEc2KeyPair7A524526",
+      ],
+      "Properties": Object {
+        "GroupDescription": "Enable SSH access and HTTP access on the inbound port",
+        "SecurityGroupEgress": Array [
+          Object {
+            "CidrIp": "0.0.0.0/0",
+            "FromPort": 1,
+            "IpProtocol": "tcp",
+            "ToPort": 65535,
+          },
+        ],
+        "SecurityGroupIngress": Array [
+          Object {
+            "FromPort": 8000,
+            "IpProtocol": "tcp",
+            "SourceSecurityGroupId": Object {
+              "Ref": "KongPostgresTemplateLoadBalancerSecurityGroup16387B8F",
+            },
+            "ToPort": 8002,
+          },
+          Object {
+            "CidrIp": Object {
+              "Ref": "KongPostgresTemplateSSHLocationDFF9C50C",
+            },
+            "FromPort": 22,
+            "IpProtocol": "tcp",
+            "ToPort": 22,
+          },
+        ],
+        "VpcId": Object {
+          "Fn::If": Array [
+            "KongPostgresTemplateConditionsCreateVpcResourcesD48F7ED5",
+            Object {
+              "Ref": "KongPostgresTemplateVPC63C71280",
+            },
+            Object {
+              "Ref": "KongPostgresTemplateVpcId3492217B",
+            },
+          ],
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "KongPostgresTemplateLoadBalancerAdminApiTargetGroupE5205E21": Object {
+      "DependsOn": Array [
+        "KongEc2KeyPairEC2KeyPairKongEc2KeyPair7A524526",
+      ],
+      "Properties": Object {
+        "HealthCheckEnabled": true,
+        "HealthCheckIntervalSeconds": 90,
+        "HealthCheckPath": "/",
+        "HealthCheckPort": "8001",
+        "HealthCheckProtocol": "HTTP",
+        "HealthCheckTimeoutSeconds": 60,
+        "HealthyThresholdCount": 3,
+        "Port": 8001,
+        "Protocol": "HTTP",
+        "ProtocolVersion": "HTTP1",
+        "TargetType": "instance",
+        "UnhealthyThresholdCount": 5,
+        "VpcId": Object {
+          "Fn::If": Array [
+            "KongPostgresTemplateConditionsCreateVpcResourcesD48F7ED5",
+            Object {
+              "Ref": "KongPostgresTemplateVPC63C71280",
+            },
+            Object {
+              "Ref": "KongPostgresTemplateVpcId3492217B",
+            },
+          ],
+        },
+      },
+      "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+    },
+    "KongPostgresTemplateLoadBalancerAdminGuiTargetGroup67332DC5": Object {
+      "DependsOn": Array [
+        "KongEc2KeyPairEC2KeyPairKongEc2KeyPair7A524526",
+      ],
+      "Properties": Object {
+        "HealthCheckEnabled": true,
+        "HealthCheckIntervalSeconds": 90,
+        "HealthCheckPath": "/",
+        "HealthCheckPort": "8002",
+        "HealthCheckProtocol": "HTTP",
+        "HealthCheckTimeoutSeconds": 60,
+        "HealthyThresholdCount": 3,
+        "Port": 8002,
+        "Protocol": "HTTP",
+        "ProtocolVersion": "HTTP1",
+        "TargetType": "instance",
+        "UnhealthyThresholdCount": 5,
+        "VpcId": Object {
+          "Fn::If": Array [
+            "KongPostgresTemplateConditionsCreateVpcResourcesD48F7ED5",
+            Object {
+              "Ref": "KongPostgresTemplateVPC63C71280",
+            },
+            Object {
+              "Ref": "KongPostgresTemplateVpcId3492217B",
+            },
+          ],
+        },
+      },
+      "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+    },
+    "KongPostgresTemplateLoadBalancerProxyTargetGroup37559BD7": Object {
+      "DependsOn": Array [
+        "KongEc2KeyPairEC2KeyPairKongEc2KeyPair7A524526",
+      ],
+      "Properties": Object {
+        "HealthCheckEnabled": true,
+        "HealthCheckIntervalSeconds": 90,
+        "HealthCheckPath": "/",
+        "HealthCheckPort": "8000",
+        "HealthCheckProtocol": "HTTP",
+        "HealthCheckTimeoutSeconds": 60,
+        "HealthyThresholdCount": 3,
+        "Port": 8000,
+        "Protocol": "HTTP",
+        "ProtocolVersion": "HTTP1",
+        "TargetType": "instance",
+        "UnhealthyThresholdCount": 5,
+        "VpcId": Object {
+          "Fn::If": Array [
+            "KongPostgresTemplateConditionsCreateVpcResourcesD48F7ED5",
+            Object {
+              "Ref": "KongPostgresTemplateVPC63C71280",
+            },
+            Object {
+              "Ref": "KongPostgresTemplateVpcId3492217B",
+            },
+          ],
+        },
+      },
+      "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+    },
+    "KongPostgresTemplateLoadBalancerSecurityGroup16387B8F": Object {
+      "DependsOn": Array [
+        "KongEc2KeyPairEC2KeyPairKongEc2KeyPair7A524526",
+      ],
+      "Properties": Object {
+        "GroupDescription": "Enable HTTP access on port 8000, 8001, and 8002",
+        "SecurityGroupEgress": Array [
+          Object {
+            "CidrIp": "0.0.0.0/0",
+            "FromPort": 1,
+            "IpProtocol": "tcp",
+            "ToPort": 65535,
+          },
+        ],
+        "SecurityGroupIngress": Array [
+          Object {
+            "CidrIp": Object {
+              "Ref": "KongPostgresTemplateKongProxyAccessE3D2E492",
+            },
+            "FromPort": 8000,
+            "IpProtocol": "tcp",
+            "ToPort": 8000,
+          },
+          Object {
+            "CidrIp": Object {
+              "Ref": "KongPostgresTemplateKongAdminApiAccess8726063F",
+            },
+            "FromPort": 8001,
+            "IpProtocol": "tcp",
+            "ToPort": 8001,
+          },
+          Object {
+            "CidrIp": Object {
+              "Ref": "KongPostgresTemplateKongAdminGuiAccess8B9C36C0",
+            },
+            "FromPort": 8002,
+            "IpProtocol": "tcp",
+            "ToPort": 8002,
+          },
+        ],
+        "VpcId": Object {
+          "Fn::If": Array [
+            "KongPostgresTemplateConditionsCreateVpcResourcesD48F7ED5",
+            Object {
+              "Ref": "KongPostgresTemplateVPC63C71280",
+            },
+            Object {
+              "Ref": "KongPostgresTemplateVpcId3492217B",
+            },
+          ],
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "KongPostgresTemplatePublicRoute7885FC68": Object {
+      "Condition": "KongPostgresTemplateConditionsCreateVpcResourcesD48F7ED5",
+      "DependsOn": Array [
+        "KongEc2KeyPairEC2KeyPairKongEc2KeyPair7A524526",
+        "KongPostgresTemplateAttachGateway18E9229C",
+      ],
+      "Properties": Object {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": Object {
+          "Ref": "KongPostgresTemplateInternetGateway847691D9",
+        },
+        "RouteTableId": Object {
+          "Ref": "KongPostgresTemplatePublicRouteTableD16A873A",
+        },
+      },
+      "Type": "AWS::EC2::Route",
+    },
+    "KongPostgresTemplatePublicRouteTableD16A873A": Object {
+      "Condition": "KongPostgresTemplateConditionsCreateVpcResourcesD48F7ED5",
+      "DependsOn": Array [
+        "KongEc2KeyPairEC2KeyPairKongEc2KeyPair7A524526",
+      ],
+      "Properties": Object {
+        "Tags": Array [
+          Object {
+            "Key": "Application",
+            "Value": Object {
+              "Ref": "AWS::StackId",
+            },
+          },
+          Object {
+            "Key": "Network",
+            "Value": "Public",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "KongPostgresTemplateVPC63C71280",
+        },
+      },
+      "Type": "AWS::EC2::RouteTable",
+    },
+    "KongPostgresTemplatePublicSubnet1233B6F23": Object {
+      "Condition": "KongPostgresTemplateConditionsCreateVpcResourcesD48F7ED5",
+      "DependsOn": Array [
+        "KongEc2KeyPairEC2KeyPairKongEc2KeyPair7A524526",
+      ],
+      "Properties": Object {
+        "AvailabilityZone": Object {
+          "Fn::If": Array [
+            "KongPostgresTemplateConditionsUseAZParameterA7BED9D5",
+            Object {
+              "Ref": "KongPostgresTemplateSubnet1AZ1590B3C3",
+            },
+            Object {
+              "Fn::Select": Array [
+                "0",
+                Object {
+                  "Fn::GetAZs": Object {
+                    "Ref": "AWS::Region",
+                  },
+                },
+              ],
+            },
+          ],
+        },
+        "CidrBlock": "10.0.0.0/23",
+        "Tags": Array [
+          Object {
+            "Key": "Application",
+            "Value": Object {
+              "Ref": "AWS::StackId",
+            },
+          },
+          Object {
+            "Key": "Network",
+            "Value": "Public",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "KongPostgresTemplateVPC63C71280",
+        },
+      },
+      "Type": "AWS::EC2::Subnet",
+    },
+    "KongPostgresTemplatePublicSubnet1RouteTableAssociationF3B5A6EF": Object {
+      "Condition": "KongPostgresTemplateConditionsCreateVpcResourcesD48F7ED5",
+      "DependsOn": Array [
+        "KongEc2KeyPairEC2KeyPairKongEc2KeyPair7A524526",
+      ],
+      "Properties": Object {
+        "RouteTableId": Object {
+          "Ref": "KongPostgresTemplatePublicRouteTableD16A873A",
+        },
+        "SubnetId": Object {
+          "Ref": "KongPostgresTemplatePublicSubnet1233B6F23",
+        },
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+    },
+    "KongPostgresTemplatePublicSubnet223EA2D26": Object {
+      "Condition": "KongPostgresTemplateConditionsCreateVpcResourcesD48F7ED5",
+      "DependsOn": Array [
+        "KongEc2KeyPairEC2KeyPairKongEc2KeyPair7A524526",
+      ],
+      "Properties": Object {
+        "AvailabilityZone": Object {
+          "Fn::If": Array [
+            "KongPostgresTemplateConditionsUseAZParameterA7BED9D5",
+            Object {
+              "Ref": "KongPostgresTemplateSubnet2AZDF83708E",
+            },
+            Object {
+              "Fn::Select": Array [
+                "1",
+                Object {
+                  "Fn::GetAZs": Object {
+                    "Ref": "AWS::Region",
+                  },
+                },
+              ],
+            },
+          ],
+        },
+        "CidrBlock": "10.0.4.0/23",
+        "Tags": Array [
+          Object {
+            "Key": "Application",
+            "Value": Object {
+              "Ref": "AWS::StackId",
+            },
+          },
+          Object {
+            "Key": "Network",
+            "Value": "Public",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "KongPostgresTemplateVPC63C71280",
+        },
+      },
+      "Type": "AWS::EC2::Subnet",
+    },
+    "KongPostgresTemplatePublicSubnet2RouteTableAssociationD70F9D66": Object {
+      "Condition": "KongPostgresTemplateConditionsCreateVpcResourcesD48F7ED5",
+      "DependsOn": Array [
+        "KongEc2KeyPairEC2KeyPairKongEc2KeyPair7A524526",
+      ],
+      "Properties": Object {
+        "RouteTableId": Object {
+          "Ref": "KongPostgresTemplatePublicRouteTableD16A873A",
+        },
+        "SubnetId": Object {
+          "Ref": "KongPostgresTemplatePublicSubnet223EA2D26",
+        },
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+    },
+    "KongPostgresTemplateRdsDBCluster5669B15F": Object {
+      "Condition": "KongPostgresTemplateConditionsCreateRDS3849530B",
+      "DeletionPolicy": "Snapshot",
+      "DependsOn": Array [
+        "KongEc2KeyPairEC2KeyPairKongEc2KeyPair7A524526",
+      ],
+      "Properties": Object {
+        "DBSubnetGroupName": Object {
+          "Ref": "KongPostgresTemplateDBSubnetGroupA8506341",
+        },
+        "DatabaseName": Object {
+          "Ref": "KongPostgresTemplateDBNameB387F8AC",
+        },
+        "Engine": "aurora-postgresql",
+        "EngineVersion": Object {
+          "Ref": "KongPostgresTemplateDBVersion2DC21574",
+        },
+        "MasterUserPassword": Object {
+          "Fn::Sub": "{{resolve:secretsmanager:\${KongPostgresTemplateRdsDBSecret5DFEE0FC}:SecretString:password}}",
+        },
+        "MasterUsername": Object {
+          "Fn::Sub": "{{resolve:secretsmanager:\${KongPostgresTemplateRdsDBSecret5DFEE0FC}:SecretString:username}}",
+        },
+        "SnapshotIdentifier": Object {
+          "Fn::If": Array [
+            "KongPostgresTemplateConditionsUseDbSnapshotA6234C31",
+            Object {
+              "Ref": "KongPostgresTemplateDBSnapshotIdentifier67515FFF",
+            },
+            Object {
+              "Ref": "AWS::NoValue",
+            },
+          ],
+        },
+        "StorageEncrypted": Object {
+          "Ref": "KongPostgresTemplateDBStorageEncryptedA938FDEA",
+        },
+        "VpcSecurityGroupIds": Array [
+          Object {
+            "Ref": "KongPostgresTemplateDBSecurityGroupB7D9B76C",
+          },
+        ],
+      },
+      "Type": "AWS::RDS::DBCluster",
+    },
+    "KongPostgresTemplateRdsDBSecret5DFEE0FC": Object {
+      "DependsOn": Array [
+        "KongEc2KeyPairEC2KeyPairKongEc2KeyPair7A524526",
+      ],
+      "Properties": Object {
+        "Description": "This secret has a dynamically generated secret password.",
+        "GenerateSecretString": Object {
+          "ExcludeCharacters": "\\"@/\\\\",
+          "GenerateStringKey": "password",
+          "PasswordLength": 30,
+          "SecretStringTemplate": Object {
+            "Fn::Sub": "{\\"username\\": \\"\${KongPostgresTemplateDBUsername84CDE25B}\\"}",
+          },
+        },
+      },
+      "Type": "AWS::SecretsManager::Secret",
+    },
+    "KongPostgresTemplateRdsPostgresDBInstance155B5B25D": Object {
+      "Condition": "KongPostgresTemplateConditionsCreateRDS3849530B",
+      "DependsOn": Array [
+        "KongEc2KeyPairEC2KeyPairKongEc2KeyPair7A524526",
+      ],
+      "Properties": Object {
+        "DBClusterIdentifier": Object {
+          "Ref": "KongPostgresTemplateRdsDBCluster5669B15F",
+        },
+        "DBInstanceClass": "db.t3.medium",
+        "DBSubnetGroupName": Object {
+          "Ref": "KongPostgresTemplateDBSubnetGroupA8506341",
+        },
+        "Engine": "aurora-postgresql",
+        "PubliclyAccessible": Object {
+          "Ref": "KongPostgresTemplateDBPublicAccess86BBE0ED",
+        },
+      },
+      "Type": "AWS::RDS::DBInstance",
+    },
+    "KongPostgresTemplateRdsPostgresDBInstance234A647F7": Object {
+      "Condition": "KongPostgresTemplateConditionsCreateRDS3849530B",
+      "DependsOn": Array [
+        "KongEc2KeyPairEC2KeyPairKongEc2KeyPair7A524526",
+      ],
+      "Properties": Object {
+        "DBClusterIdentifier": Object {
+          "Ref": "KongPostgresTemplateRdsDBCluster5669B15F",
+        },
+        "DBInstanceClass": "db.t3.medium",
+        "DBSubnetGroupName": Object {
+          "Ref": "KongPostgresTemplateDBSubnetGroupA8506341",
+        },
+        "Engine": "aurora-postgresql",
+        "PubliclyAccessible": Object {
+          "Ref": "KongPostgresTemplateDBPublicAccess86BBE0ED",
+        },
+      },
+      "Type": "AWS::RDS::DBInstance",
+    },
+    "KongPostgresTemplateVPC63C71280": Object {
+      "Condition": "KongPostgresTemplateConditionsCreateVpcResourcesD48F7ED5",
+      "DependsOn": Array [
+        "KongEc2KeyPairEC2KeyPairKongEc2KeyPair7A524526",
+      ],
+      "Properties": Object {
+        "CidrBlock": "10.0.0.0/16",
+        "EnableDnsHostnames": true,
+        "EnableDnsSupport": true,
+        "Tags": Array [
+          Object {
+            "Key": "Application",
+            "Value": Object {
+              "Ref": "AWS::StackId",
+            },
+          },
+          Object {
+            "Key": "Network",
+            "Value": "Public",
+          },
+        ],
+      },
+      "Type": "AWS::EC2::VPC",
+    },
+    "KongPostgresTemplateWaitForRdsConfigDelayF132A297": Object {
+      "DependsOn": Array [
+        "KongEc2KeyPairEC2KeyPairKongEc2KeyPair7A524526",
+      ],
+      "Metadata": Object {
+        "WaitOnRdsDBCluster": Object {
+          "Fn::If": Array [
+            "KongPostgresTemplateConditionsCreateRDS3849530B",
+            Object {
+              "Ref": "KongPostgresTemplateRdsDBCluster5669B15F",
+            },
+            "No RDS DB Cluster created",
+          ],
+        },
+        "WaitOnRdsPostgresDBInstance1": Object {
+          "Fn::If": Array [
+            "KongPostgresTemplateConditionsCreateRDS3849530B",
+            Object {
+              "Ref": "KongPostgresTemplateRdsPostgresDBInstance155B5B25D",
+            },
+            "No RDS Postgres Instance 1 created",
+          ],
+        },
+        "WaitOnRdsPostgresDBInstance2": Object {
+          "Fn::If": Array [
+            "KongPostgresTemplateConditionsCreateRDS3849530B",
+            Object {
+              "Ref": "KongPostgresTemplateRdsPostgresDBInstance234A647F7",
+            },
+            "No RDS Postgres Instance 2 created",
+          ],
+        },
+      },
+      "Properties": Object {
+        "DelayTime": Object {
+          "Fn::If": Array [
+            "KongPostgresTemplateConditionsCreateRDS3849530B",
+            "60",
+            "0",
+          ],
+        },
+        "ServiceToken": Object {
+          "Fn::GetAtt": Array [
+            "KongPostgresTemplateDelayFunction9E718121",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "Custom::Delay",
+    },
+  },
+}
+`;
