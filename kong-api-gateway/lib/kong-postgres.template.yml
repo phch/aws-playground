@@ -91,6 +91,13 @@ Parameters:
     MinValue: '5'
     MaxValue: '6144'
     ConstraintDescription: must be between 5+
+  DBMultiAZ:
+    Default: false
+    Description: 'allow MultiAZ database deployment '
+    Type: String
+    AllowedValues:
+    - true
+    - false
   DBPublicAccess:
     Default: false
     Description: Allow Public access to database
@@ -99,13 +106,12 @@ Parameters:
     - true
     - false
   DBVersion:
-    Description: Aurora Postgres version
+    Description: Postgres version
     Type: String
-    Default: 12.4
+    Default: 9.6.8
     AllowedValues:
-    - 12.4
-    - 11.9
-    - 11.8
+    - 9.6.8
+    - 9.5.12
   DBSnapshotIdentifier:
     Description: Optional- The RDS snapshot name to restore to the new DB instance.
     Type: String
@@ -142,18 +148,9 @@ Parameters:
     Default: 0.0.0.0/0
     AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})"
     ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
-  KongAdminApiAccess:
-    Description: The IP address range that can be used to access the Kong Admin Api port
+  KongAdminAccess:
+    Description: The IP address range that can be used to access the Kong Admin port
       8001
-    Type: String
-    MinLength: '9'
-    MaxLength: '18'
-    Default: 0.0.0.0/0
-    AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})"
-    ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
-  KongAdminGuiAccess:
-    Description: The IP address range that can be used to access the Kong Admin Gui port
-      8002
     Type: String
     MinLength: '9'
     MaxLength: '18'
@@ -173,7 +170,7 @@ Parameters:
   KongFleetDesiredSize:
     Description: Desired Number of Kong instances
     Type: Number
-    Default: '1'
+    Default: '2'
     MinValue: '1'
   KongInstanceType:
     Description: 'Kong EC2 instance type. Note: T2 instance is not supported on the
@@ -211,9 +208,6 @@ Parameters:
     - r3.4xlarge
     - r3.8xlarge
     ConstraintDescription: must be a valid EC2 instance type.
-  KongAmiId:
-    Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
-    Default: '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2'
   KongVersion:
     Description: Kong version (Only 0.15.x and above supported). Leave it blank to
       install latest version.
@@ -228,8 +222,30 @@ Parameters:
     - 'false'
   KongConfigs:
     Description: Kong configuration
-    Type: String
-    ConstraintDescription: must be in KONG_ENV1=v1[^ KONG_ENV2=v2] format
+    Type: CommaDelimitedList
+    ConstraintDescription: must be in KONG_ENV1=v1[, KONG_ENV2=v2] format
+Mappings:
+  RegionKongAmiMap:
+    us-east-1:
+      HVM: ami-a4c7edb2
+    us-east-2:
+      HVM: ami-8a7859ef
+    us-west-1:
+      HVM: ami-327f5352
+    us-west-2:
+      HVM: ami-6df1e514
+    eu-west-1:
+      HVM: ami-d7b9a2b1
+    eu-west-2:
+      HVM: ami-ed100689
+    eu-central-1:
+      HVM: ami-87dab1eb
+    ap-southeast-1:
+      HVM: ami-77af2014
+    ap-southeast-2:
+      HVM: ami-10918173
+    sa-east-1:
+      HVM: ami-87dab1eb
 Conditions:
   CreateRDS:
     Fn::Equals:
@@ -372,180 +388,54 @@ Resources:
         Ref: PublicRouteTable
   KongLoadBalancerNewVPC:
     Condition: CreateVpcResources
-    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Type: AWS::ElasticLoadBalancing::LoadBalancer
     Properties:
-      IpAddressType: 'ipv4'
-      Scheme: 'internet-facing'
       SecurityGroups:
       - Ref: LoadBalancerSecurityGroup
-      SubnetMappings:
-      - SubnetId:
-          Ref: PublicSubnet1
-      - SubnetId:
-          Ref: PublicSubnet2
-      Type: 'application'
-  KongLoadBalancerProxyListenerNewVPC:
-    Condition: CreateVpcResources
-    Type: AWS::ElasticLoadBalancingV2::Listener
-    Properties:
-      DefaultActions:
-        - Type: 'forward'
-          ForwardConfig:
-            TargetGroups:
-            - TargetGroupArn:
-                Ref: LoadBalancerProxyTargetGroup
-      LoadBalancerArn:
-        Ref: KongLoadBalancerNewVPC
-      Port: 8000
-      Protocol: "HTTP"
-  KongLoadBalancerAdminApiListenerNewVPC:
-    Condition: CreateVpcResources
-    Type: AWS::ElasticLoadBalancingV2::Listener
-    Properties:
-      DefaultActions:
-        - Type: 'forward'
-          ForwardConfig:
-            TargetGroups:
-            - TargetGroupArn:
-                Ref: LoadBalancerAdminApiTargetGroup
-      LoadBalancerArn:
-        Ref: KongLoadBalancerNewVPC
-      Port: 8001
-      Protocol: "HTTP"
-  KongLoadBalancerAdminGuiListenerNewVPC:
-    Condition: CreateVpcResources
-    Type: AWS::ElasticLoadBalancingV2::Listener
-    Properties:
-      DefaultActions:
-        - Type: 'forward'
-          ForwardConfig:
-            TargetGroups:
-            - TargetGroupArn:
-                Ref: LoadBalancerAdminGuiTargetGroup
-      LoadBalancerArn:
-        Ref: KongLoadBalancerNewVPC
-      Port: 8002
-      Protocol: "HTTP"
+      Subnets:
+      - Ref: PublicSubnet1
+      - Ref: PublicSubnet2
+      CrossZone: 'true'
+      Listeners:
+      - LoadBalancerPort: '8000'
+        InstancePort: '8000'
+        Protocol: HTTP
+      - LoadBalancerPort: '8001'
+        InstancePort: '8001'
+        Protocol: HTTP
+      HealthCheck:
+        Target: TCP:8000
+        HealthyThreshold: '3'
+        UnhealthyThreshold: '5'
+        Interval: '90'
+        Timeout: '60'
   KongLoadBalancerExistingVPC:
     Condition: ExistingVpcResources
-    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Type: AWS::ElasticLoadBalancing::LoadBalancer
     Properties:
-      IpAddressType: 'ipv4'
-      Scheme: 'internet-facing'
       SecurityGroups:
       - Ref: LoadBalancerSecurityGroup
-      SubnetMappings:
-      - SubnetId:
-          Ref: SubnetId1
-      - SubnetId:
-          Ref: SubnetId2
-      Type: 'application'
-  KongLoadBalancerProxyListenerExistingVPC:
-    Condition: ExistingVpcResources
-    Type: AWS::ElasticLoadBalancingV2::Listener
-    Properties:
-      DefaultActions:
-        - Type: 'forward'
-          ForwardConfig:
-            TargetGroups:
-            - TargetGroupArn:
-                Ref: LoadBalancerProxyTargetGroup
-      LoadBalancerArn:
-        Ref: KongLoadBalancerExistingVPC
-      Port: 8000
-      Protocol: "HTTP"
-  KongLoadBalancerAdminApiListenerExistingVPC:
-    Condition: ExistingVpcResources
-    Type: AWS::ElasticLoadBalancingV2::Listener
-    Properties:
-      DefaultActions:
-        - Type: 'forward'
-          ForwardConfig:
-            TargetGroups:
-            - TargetGroupArn:
-                Ref: LoadBalancerAdminApiTargetGroup
-      LoadBalancerArn:
-        Ref: KongLoadBalancerExistingVPC
-      Port: 8001
-      Protocol: "HTTP"
-  KongLoadBalancerAdminGuiListenerExistingVPC:
-    Condition: ExistingVpcResources
-    Type: AWS::ElasticLoadBalancingV2::Listener
-    Properties:
-      DefaultActions:
-        - Type: 'forward'
-          ForwardConfig:
-            TargetGroups:
-            - TargetGroupArn:
-                Ref: LoadBalancerAdminGuiTargetGroup
-      LoadBalancerArn:
-        Ref: KongLoadBalancerExistingVPC
-      Port: 8002
-      Protocol: "HTTP"
-  LoadBalancerProxyTargetGroup:
-    Type: AWS::ElasticLoadBalancingV2::TargetGroup
-    Properties:
-      HealthCheckEnabled: 'true'
-      HealthCheckIntervalSeconds: '90'
-      HealthCheckPath: '/'
-      HealthCheckPort: '8000'
-      HealthCheckProtocol: 'HTTP'
-      HealthCheckTimeoutSeconds: '60'
-      HealthyThresholdCount: '3'
-      UnhealthyThresholdCount: '5'
-      Port: '8000'
-      Protocol: 'HTTP'
-      ProtocolVersion: 'HTTP1'
-      VpcId:
-        Fn::If:
-        - CreateVpcResources
-        - Ref: VPC
-        - Ref: VpcId
-      TargetType: 'instance'
-  LoadBalancerAdminApiTargetGroup:
-    Type: AWS::ElasticLoadBalancingV2::TargetGroup
-    Properties:
-      HealthCheckEnabled: 'true'
-      HealthCheckIntervalSeconds: '90'
-      HealthCheckPath: '/'
-      HealthCheckPort: '8001'
-      HealthCheckProtocol: 'HTTP'
-      HealthCheckTimeoutSeconds: '60'
-      HealthyThresholdCount: '3'
-      UnhealthyThresholdCount: '5'
-      Port: '8001'
-      Protocol: 'HTTP'
-      ProtocolVersion: 'HTTP1'
-      VpcId:
-        Fn::If:
-        - CreateVpcResources
-        - Ref: VPC
-        - Ref: VpcId
-      TargetType: 'instance'
-  LoadBalancerAdminGuiTargetGroup:
-    Type: AWS::ElasticLoadBalancingV2::TargetGroup
-    Properties:
-      HealthCheckEnabled: 'true'
-      HealthCheckIntervalSeconds: '90'
-      HealthCheckPath: '/'
-      HealthCheckPort: '8002'
-      HealthCheckProtocol: 'HTTP'
-      HealthCheckTimeoutSeconds: '60'
-      HealthyThresholdCount: '3'
-      UnhealthyThresholdCount: '5'
-      Port: '8002'
-      Protocol: 'HTTP'
-      ProtocolVersion: 'HTTP1'
-      VpcId:
-        Fn::If:
-        - CreateVpcResources
-        - Ref: VPC
-        - Ref: VpcId
-      TargetType: 'instance'
+      Subnets:
+      - Ref: SubnetId1
+      - Ref: SubnetId2
+      CrossZone: 'true'
+      Listeners:
+      - LoadBalancerPort: '8000'
+        InstancePort: '8000'
+        Protocol: HTTP
+      - LoadBalancerPort: '8001'
+        InstancePort: '8001'
+        Protocol: HTTP
+      HealthCheck:
+        Target: TCP:8000
+        HealthyThreshold: '3'
+        UnhealthyThreshold: '5'
+        Interval: '90'
+        Timeout: '60'
   LoadBalancerSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Enable HTTP access on port 8000, 8001, and 8002
+      GroupDescription: Enable HTTP access on port 8000 and 8001
       VpcId:
         Fn::If:
         - CreateVpcResources
@@ -561,79 +451,14 @@ Resources:
         FromPort: '8001'
         ToPort: '8001'
         CidrIp:
-          Ref: KongAdminApiAccess
-      - IpProtocol: tcp
-        FromPort: '8002'
-        ToPort: '8002'
-        CidrIp:
-          Ref: KongAdminGuiAccess
+          Ref: KongAdminAccess
       SecurityGroupEgress:
       - IpProtocol: tcp
         FromPort: '1'
         ToPort: '65535'
         CidrIp: 0.0.0.0/0
-  # Create delay because RDS needs time to configure database after deployment completes
-  WaitForRdsConfigDelay:
-    Type: 'Custom::Delay'
-    Metadata:
-      WaitOnRdsDBCluster:
-        Fn::If:
-        - CreateRDS
-        - Ref: RdsDBCluster
-        - 'No RDS DB Cluster created'
-      WaitOnRdsPostgresDBInstance1:
-        Fn::If:
-        - CreateRDS
-        - Ref: RdsPostgresDBInstance1
-        - 'No RDS Postgres Instance 1 created'
-      WaitOnRdsPostgresDBInstance2:
-        Fn::If:
-        - CreateRDS
-        - Ref: RdsPostgresDBInstance2
-        - 'No RDS Postgres Instance 2 created'
-    Properties:
-      ServiceToken: 
-        Fn::GetAtt:
-        - DelayFunction
-        - Arn
-      DelayTime:
-        Fn::If:
-        - CreateRDS
-        - '60'
-        - '0'
-  DelayFunctionRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service: lambda.amazonaws.com
-            Action: sts:AssumeRole
-      ManagedPolicyArns:
-      - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
-  DelayFunction:
-    Type: AWS::Lambda::Function
-    Properties:
-      Handler: index.handler
-      Timeout: 300
-      Role:
-        Fn::GetAtt:
-        - DelayFunctionRole
-        - Arn
-      Runtime: python3.8
-      Code:
-        ZipFile: |
-          import cfnresponse
-          import time
-          def handler(event, context):
-            delayTime = int(event['ResourceProperties']['DelayTime'])
-            time.sleep(delayTime)
-            cfnresponse.send(event, context, cfnresponse.SUCCESS, {})
   KongScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
-    DependsOn: WaitForRdsConfigDelay
     CreationPolicy:
       ResourceSignal:
         Count:
@@ -663,14 +488,13 @@ Resources:
       LaunchConfigurationName:
         Ref: KongLaunchConfig
       MinSize: '1'
-      MaxSize:
-        Ref: KongFleetMaxSize
-      DesiredCapacity:
-        Ref: KongFleetDesiredSize
-      TargetGroupARNs:
-        - Ref: LoadBalancerProxyTargetGroup
-        - Ref: LoadBalancerAdminApiTargetGroup
-        - Ref: LoadBalancerAdminGuiTargetGroup
+      MaxSize: '1'
+      DesiredCapacity: '1'
+      LoadBalancerNames:
+      - Fn::If:
+        - CreateVpcResources
+        - Ref: KongLoadBalancerNewVPC
+        - Ref: KongLoadBalancerExistingVPC
       Tags:
       - Key: Name
         Value:
@@ -685,18 +509,16 @@ Resources:
         PolicyDocument:
           Version: '2012-10-17'
           Statement:
-          - Effect: Allow
-            Action:
+          - Action:
             - ec2:Describe*
             - cloudformation:DescribeStackResource
-            Resource: "*"
+            Resource:
+            - "*"
+            Effect: Allow
           - Effect: Allow
             Action: autoscaling:UpdateAutoScalingGroup
-            Resource: "*"
-          - Effect: Allow
-            Action: secretsmanager:GetSecretValue
             Resource:
-              Ref: RdsDBSecret
+            - "*"
       AssumeRolePolicyDocument:
         Statement:
         - Action:
@@ -716,7 +538,10 @@ Resources:
     Properties:
       AssociatePublicIpAddress: true
       ImageId:
-        Ref: KongAmiId
+        Fn::FindInMap:
+        - RegionKongAmiMap
+        - Ref: AWS::Region
+        - HVM
       InstanceType:
         Ref: KongInstanceType
       KeyName:
@@ -727,90 +552,192 @@ Resources:
         Ref: ASGUpdateProfile
       UserData:
         Fn::Base64:
-          Fn::Sub:
-            - |-
-              #!/bin/bash
-              yum update -y aws-cfn-bootstrap
-              echo '* soft nofile 65000' >> /etc/security/limits.conf
-              echo '* hard nofile 65000' >> /etc/security/limits.conf
+          Fn::Join:
+          - ''
+          - - "#!/bin/bash\n"
+            - 'yum update -y aws-cfn-bootstrap
 
-              echo '[kong] add Kong to yum repository'
-              echo '
-              [kong.repo]
-              name = kong-rpm-repository
-              baseurl = https://download.konghq.com/gateway-2.x-amazonlinux-2/
-              enabled = 1
-              gpgcheck = 0
-              ' > /etc/yum.repos.d/kong.repo
-              
-              echo '[kong] install Kong'
-              kong_version=${KongVersion}
-              if [ "$kong_version" != "" ]
-              then
-                kong_version="-$kong_version"
-              fi
-              yum update -y
-              yum install -y jq
-              yum install kong-enterprise-edition$kong_version -y
-              chown ec2-user /usr/local/kong
-              if [ "$?" -ne "0" ]
-              then
-                /opt/aws/bin/cfn-signal -e 1 --stack ${AWS::StackName} --resource KongScalingGroup --region ${AWS::Region} --reason "failed to install kong-enterprise-edition$kong_version" 
-                echo "[kong] failed to install kong-enterprise-edition$kong_version, exiting..." 
-                exit
-              fi
+              '
+            - 'echo ''* soft nofile 65000'' >> /etc/security/limits.conf
 
-              echo '[kong] prepare Kong configuration file'
-              cp /etc/kong/kong.conf.default /etc/kong/kong.conf
-              kong_pg_secret=$(aws secretsmanager get-secret-value --secret-id ${RdsDBSecret} --query SecretString --region ${AWS::Region} --output text)
-              kong_pg_user=$(echo $kong_pg_secret | jq -r .username)
-              kong_pg_password=$(echo $kong_pg_secret | jq -r .password)
-              kong_admin_api_uri=http://$(curl http://169.254.169.254/latest/meta-data/public-ipv4):8001
-              kong_admin_gui_url=http://$(curl http://169.254.169.254/latest/meta-data/public-ipv4):8002
-              echo "
-              pg_host = ${KongPgHost}
-              pg_port = ${KongPgPort}
-              pg_database = ${DBName}
-              pg_user = $kong_pg_user
-              pg_password = $kong_pg_password
-              admin_api_uri = $kong_admin_api_uri
-              admin_gui_url = $kong_admin_gui_url
-              ${KongConfig}
-              " >> /etc/kong/kong.conf
+              '
+            - 'echo ''* hard nofile 65000'' >> /etc/security/limits.conf
 
-              kong_migrations=${KongBootstrapMigration}
-              if [ "$kong_migrations" == "true" ]
-              then
-                echo '[kong] starting migrations...'
-                su ec2-user -s /bin/sh -c '/usr/local/bin/kong migrations bootstrap --v'
-              fi
-              su ec2-user -s /bin/sh -c '/usr/local/bin/kong start --v'
-              if ! /usr/local/bin/kong health --v; then
-                echo '[kong] failed to start kong, exiting...'
-                /opt/aws/bin/cfn-signal -e 1 --stack ${AWS::StackName} --resource KongScalingGroup --region ${AWS::Region} --reason "Failed to start Kong" 
-                exit
-              fi
-              /opt/aws/bin/cfn-signal -e 0 --stack ${AWS::StackName} --resource KongScalingGroup --region ${AWS::Region} --reason "Kong setup completed"
-            - KongPgHost:
-                Fn::If:
-                - CreateRDS
-                - Fn::GetAtt:
-                  - RdsDBCluster
-                  - Endpoint.Address
-                - Ref: DBHost
-              KongPgPort:
-                Fn::If:
-                - CreateRDS
-                - Fn::GetAtt:
-                  - RdsDBCluster
-                  - Endpoint.Port
-                - Ref: DBPort
-              KongConfig:
-                Fn::Join:
-                - "\n"
-                - Fn::Split:
-                  - '^'
-                  - Ref: KongConfigs
+              '
+            - kong_version=
+            - Ref: KongVersion
+            - "\n"
+            - 'if [ "$kong_version" != "" ]
+
+              '
+            - 'then
+
+              '
+            - '   kong_version="-$kong_version"
+
+              '
+            - 'fi
+
+              '
+            - kong_migrations=
+            - Ref: KongBootstrapMigration
+            - "\n"
+            - KONG_ENV="
+            - Fn::Join:
+              - " "
+              - Ref: KongConfigs
+            - "\"\n"
+            - 'export $KONG_ENV
+
+              '
+            - 'export KONG_DATABASE=postgres
+
+              '
+            - export KONG_PG_HOST=
+            - Fn::If:
+              - CreateRDS
+              - Fn::GetAtt:
+                - PostgresDB
+                - Endpoint.Address
+              - Ref: DBHost
+            - "\n"
+            - export KONG_PG_PORT=
+            - Fn::If:
+              - CreateRDS
+              - Fn::GetAtt:
+                - PostgresDB
+                - Endpoint.Port
+              - Ref: DBPort
+            - "\n"
+            - export KONG_PG_USER=
+            - '{{resolve:secretsmanager:PostgresDBSecret:SecretString:username}}'
+            - "\n"
+            - export KONG_PG_DATABASE=
+            - Ref: DBName
+            - "\n"
+            - export KONG_PG_PASSWORD=
+            - '{{resolve:secretsmanager:PostgresDBSecret:SecretString:password}}'
+            - "\n"
+            - 'export KONG_ADMIN_LISTEN=''0.0.0.0:8001, 0.0.0.0:8444 ssl''
+
+              '
+            - "echo \"[kong] installing Kong with following environments:\" \n"
+            - 'env
+
+              '
+            - "mkdir /usr/local/kong && chown ec2-user /usr/local/kong \n"
+            - 'wget https://bintray.com/kong/kong-rpm/rpm -O bintray-kong-kong-rpm.repo
+
+              '
+            - 'if [ "$?" -ne "0" ]
+
+              '
+            - 'then
+
+              '
+            - "   /opt/aws/bin/cfn-signal -e 1 --stack "
+            - Ref: AWS::StackName
+            - " --resource KongScalingGroup "
+            - " --region "
+            - Ref: AWS::Region
+            - " --reason \"failed to install kong$kong_version\" \n"
+            - "   echo \"[kong] failed to install kong$kong_version, exiting...\"
+              \n"
+            - "   exit\n"
+            - 'fi
+
+              '
+            - 'sed -i -e ''s/baseurl.*/&\/amazonlinux\/amazonlinux''/ bintray-kong-kong-rpm.repo
+
+              '
+            - 'mv bintray-kong-kong-rpm.repo /etc/yum.repos.d/
+
+              '
+            - 'yum update -y
+
+              '
+            - 'yum install -y epel-release
+
+              '
+            - 'amazon-linux-extras install -y epel
+
+              '
+            - 'yum install -y kong$kong_version
+
+              '
+            - 'if [ "$?" -ne "0" ]
+
+              '
+            - 'then
+
+              '
+            - "   /opt/aws/bin/cfn-signal -e 1 --stack "
+            - Ref: AWS::StackName
+            - " --resource KongScalingGroup "
+            - " --region "
+            - Ref: AWS::Region
+            - " --reason \"failed to install kong$kong_version.aws.rpm\" \n"
+            - "   echo \"[kong] failed to install kong$kong_version.aws.rpm, exiting...\"
+              \n"
+            - "   exit\n"
+            - 'fi
+
+              '
+            - 'if [ "$kong_migrations" == "true" ]
+
+              '
+            - 'then
+
+              '
+            - "   echo \"[kong] starting migrations...\" \n"
+            - '   su -s /bin/sh -c "/usr/local/bin/kong migrations bootstrap" ec2-user
+
+              '
+            - 'fi
+
+              '
+            - 'su -s /bin/sh -c "/usr/local/bin/kong start" ec2-user
+
+              '
+            - 'if ! /usr/local/bin/kong health; then
+
+              '
+            - "   echo \"[kong] failed to start kong, exiting...\" \n"
+            - "   /opt/aws/bin/cfn-signal -e 1 --stack "
+            - Ref: AWS::StackName
+            - " --resource KongScalingGroup "
+            - " --region "
+            - Ref: AWS::Region
+            - " --reason \"Failed to start Kong\" \n"
+            - "   exit\n"
+            - 'fi
+
+              '
+            - 'instance_id=`curl http://169.254.169.254/latest/meta-data/instance-id`
+
+              '
+            - autoscale_group=`aws ec2 describe-tags --filters "Name=resource-id,Values=$instance_id"
+            - " --region "
+            - Ref: AWS::Region
+            - ' "Name=key,Values=aws:autoscaling:groupName"'
+            - ' | sed -ne ''s/[ ]*"Value":\s"\(.*\)",/\1/p''`
+
+              '
+            - aws autoscaling update-auto-scaling-group --auto-scaling-group-name
+              $autoscale_group
+            - " --region "
+            - Ref: AWS::Region
+            - " --max-size "
+            - Ref: KongFleetMaxSize
+            - " --desired-capacity "
+            - Ref: KongFleetDesiredSize
+            - " \n"
+            - "/opt/aws/bin/cfn-signal -e 0 --stack "
+            - Ref: AWS::StackName
+            - " --resource KongScalingGroup "
+            - " --region "
+            - Ref: AWS::Region
+            - " --reason \"Kong setup completed\" \n"
   KongSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -823,7 +750,7 @@ Resources:
       SecurityGroupIngress:
       - IpProtocol: tcp
         FromPort: '8000'
-        ToPort: '8002'
+        ToPort: '8001'
         SourceSecurityGroupId:
           Ref: LoadBalancerSecurityGroup
       - IpProtocol: tcp
@@ -862,9 +789,10 @@ Resources:
           - Ref: PublicSubnet2
         - - Ref: SubnetId1
           - Ref: SubnetId2
-  RdsDBSecret:
+  PostgresDBSecret:
     Type: 'AWS::SecretsManager::Secret'
     Properties:
+      Name: KongPostgresDBSecret
       Description: "This secret has a dynamically generated secret password."
       GenerateSecretString:
         SecretStringTemplate:
@@ -872,57 +800,39 @@ Resources:
         GenerateStringKey: "password"
         PasswordLength: 30
         ExcludeCharacters: '"@/\'
-  RdsDBCluster:
-    Type: AWS::RDS::DBCluster
+  PostgresDB:
+    Type: AWS::RDS::DBInstance
     Condition: CreateRDS
     Properties:
-      Engine: aurora-postgresql
-      EngineVersion:
-        Ref: DBVersion
-      DatabaseName:
+      Engine: postgres
+      DBName:
         Ref: DBName
-      MasterUsername:
-        Fn::Sub: '{{resolve:secretsmanager:${RdsDBSecret}:SecretString:username}}'
-      MasterUserPassword:
-        Fn::Sub: '{{resolve:secretsmanager:${RdsDBSecret}:SecretString:password}}'
+      MasterUsername: '{{resolve:secretsmanager:PostgresDBSecret:SecretString:username}}'
+      MasterUserPassword: '{{resolve:secretsmanager:PostgresDBSecret:SecretString:password}}'
+      DBInstanceClass:
+        Ref: DBClass
+      AllocatedStorage:
+        Ref: DBAllocatedStorage
       DBSubnetGroupName:
         Ref: DBSubnetGroup
-      StorageEncrypted:
-        Ref: DBStorageEncrypted
-      SnapshotIdentifier:
+      PubliclyAccessible:
+        Ref: DBPublicAccess
+      EngineVersion:
+        Ref: DBVersion
+      DBSnapshotIdentifier:
         Fn::If:
         - UseDbSnapshot
         - Ref: DBSnapshotIdentifier
         - Ref: AWS::NoValue
-      VpcSecurityGroupIds:
+      MultiAZ:
+        Ref: DBMultiAZ
+      StorageEncrypted:
+        Ref: DBStorageEncrypted
+      StorageType:
+        Ref: DBStorageType
+      VPCSecurityGroups:
       - Ref: DBSecurityGroup
     DeletionPolicy: Snapshot
-  RdsPostgresDBInstance1:
-    Type: AWS::RDS::DBInstance
-    Condition: CreateRDS
-    Properties:
-      Engine: aurora-postgresql
-      DBInstanceClass:
-        Ref: DBClass
-      DBClusterIdentifier:
-        Ref: RdsDBCluster
-      DBSubnetGroupName:
-        Ref: DBSubnetGroup
-      PubliclyAccessible:
-        Ref: DBPublicAccess
-  RdsPostgresDBInstance2:
-    Type: AWS::RDS::DBInstance
-    Condition: CreateRDS
-    Properties:
-      Engine: aurora-postgresql
-      DBInstanceClass:
-        Ref: DBClass
-      DBClusterIdentifier:
-        Ref: RdsDBCluster
-      DBSubnetGroupName:
-        Ref: DBSubnetGroup
-      PubliclyAccessible:
-        Ref: DBPublicAccess
   DBSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Condition: CreateRDS
@@ -930,8 +840,8 @@ Resources:
       GroupDescription: Database security groups
       SecurityGroupIngress:
       - IpProtocol: tcp
-        FromPort: '3306'
-        ToPort: '3306'
+        FromPort: 5432
+        ToPort: '5432'
         SourceSecurityGroupId:
           Ref: KongSecurityGroup
       - IpProtocol: tcp
@@ -965,8 +875,8 @@ Outputs:
             - KongLoadBalancerExistingVPC
             - DNSName
         - ":8000"
-  AdminApiURL:
-    Description: Kong Admin Api URL
+  AdminURL:
+    Description: Kong Admin URL
     Value:
       Fn::Join:
       - ''
@@ -980,18 +890,3 @@ Outputs:
             - KongLoadBalancerExistingVPC
             - DNSName
         - ":8001"
-  AdminGuiURL:
-    Description: Kong Admin Gui URL
-    Value:
-      Fn::Join:
-      - ''
-      - - http://
-        - Fn::If:
-          - CreateVpcResources
-          - Fn::GetAtt:
-            - KongLoadBalancerNewVPC
-            - DNSName
-          - Fn::GetAtt:
-            - KongLoadBalancerExistingVPC
-            - DNSName
-        - ":8002"
