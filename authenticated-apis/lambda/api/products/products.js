@@ -156,7 +156,6 @@ api.delete('/products/:productId', async (req, res) => {
   }
 });
 
-
 var jsonContainsRequiredFieldsOnly = function(json, fields) {
   if (Object.keys(json).length != fields.length) {
     console.warn('Json size: ' + Object.keys(json).length + ', fields size: ' + fields.length);

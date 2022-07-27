@@ -5,7 +5,9 @@ import (
 
 	"github.com/aws/aws-cdk-go/awscdk"
 	"github.com/aws/aws-cdk-go/awscdk/awsapigatewayv2"
+	"github.com/aws/aws-cdk-go/awscdk/awsapigatewayv2authorizers"
 	"github.com/aws/aws-cdk-go/awscdk/awsapigatewayv2integrations"
+	"github.com/aws/aws-cdk-go/awscdk/awscognito"
 	"github.com/aws/aws-cdk-go/awscdk/awsdynamodb"
 	"github.com/aws/aws-cdk-go/awscdk/awslambda"
 	"github.com/aws/aws-cdk-go/awscdk/awss3assets"
@@ -44,24 +46,121 @@ func NewAuthenticatedApisStack(scope constructs.Construct, id string, props *Aut
 	httpApi := awsapigatewayv2.NewHttpApi(stack, jsii.String("ProductsApi"), &awsapigatewayv2.HttpApiProps{
 		CreateDefaultStage: jsii.Bool(true),
 	})
-	lambdaProxyIntegration := awsapigatewayv2integrations.NewLambdaProxyIntegration(&awsapigatewayv2integrations.LambdaProxyIntegrationProps{
-		Handler:              productsApiFunction,
-		PayloadFormatVersion: awsapigatewayv2.PayloadFormatVersion_VERSION_2_0(),
+	lambdaProxyIntegration := awsapigatewayv2integrations.NewHttpLambdaIntegration(
+		jsii.String("HttpLambdaIntegration"),
+		productsApiFunction,
+		&awsapigatewayv2integrations.HttpLambdaIntegrationProps{
+			PayloadFormatVersion: awsapigatewayv2.PayloadFormatVersion_VERSION_2_0(),
+		},
+	)
+
+	pool := awscognito.NewUserPool(stack, jsii.String("Pool"), &awscognito.UserPoolProps{
+		SelfSignUpEnabled: jsii.Bool(true),
+		SignInAliases: &awscognito.SignInAliases{
+			Username: jsii.Bool(true),
+			Email:    jsii.Bool(true),
+		},
+		AutoVerify: &awscognito.AutoVerifiedAttrs{
+			Email: jsii.Bool(true),
+		},
+		StandardAttributes: &awscognito.StandardAttributes{
+			Email: &awscognito.StandardAttribute{
+				Required: jsii.Bool(true),
+			},
+		},
 	})
+	domain := pool.AddDomain(jsii.String("Domain"), &awscognito.UserPoolDomainOptions{
+		CognitoDomain: &awscognito.CognitoDomainOptions{
+			DomainPrefix: jsii.String("authenticated-apis-app"),
+		},
+	})
+	productReadOnlyScope := awscognito.NewResourceServerScope(&awscognito.ResourceServerScopeProps{
+		ScopeName:        jsii.String("products:read"),
+		ScopeDescription: jsii.String("Retrieve product information"),
+	})
+	productFullAccessScope := awscognito.NewResourceServerScope(&awscognito.ResourceServerScopeProps{
+		ScopeName:        jsii.String("products:*"),
+		ScopeDescription: jsii.String("Create, retrieve, modify, delete production information"),
+	})
+	resourceServer := pool.AddResourceServer(jsii.String("BackendApi"), &awscognito.UserPoolResourceServerOptions{
+		Identifier: jsii.String("com.example.api.backend"),
+		Scopes:     &[]awscognito.ResourceServerScope{productReadOnlyScope, productFullAccessScope},
+	})
+	readOnlyClient := pool.AddClient(jsii.String("ProductsReadOnlyApiClient"), &awscognito.UserPoolClientOptions{
+		OAuth: &awscognito.OAuthSettings{
+			CallbackUrls: jsii.Strings(*domain.BaseUrl(&awscognito.BaseUrlOptions{})),
+			Flows: &awscognito.OAuthFlows{
+				// https://aws.amazon.com/premiumsupport/knowledge-center/cognito-custom-scopes-api-gateway/
+				ImplicitCodeGrant: jsii.Bool(true),
+			},
+			Scopes: &[]awscognito.OAuthScope{
+				awscognito.OAuthScope_ResourceServer(resourceServer, productReadOnlyScope),
+				awscognito.OAuthScope_OPENID(),
+			},
+		},
+	})
+	fullAccessClient := pool.AddClient(jsii.String("ProductsFullAccessApiClient"), &awscognito.UserPoolClientOptions{
+		OAuth: &awscognito.OAuthSettings{
+			CallbackUrls: jsii.Strings(*domain.BaseUrl(&awscognito.BaseUrlOptions{})),
+			Flows: &awscognito.OAuthFlows{
+				// https://aws.amazon.com/premiumsupport/knowledge-center/cognito-custom-scopes-api-gateway/
+				ImplicitCodeGrant: jsii.Bool(true),
+			},
+			Scopes: &[]awscognito.OAuthScope{
+				awscognito.OAuthScope_ResourceServer(resourceServer, productFullAccessScope),
+				awscognito.OAuthScope_OPENID(),
+			},
+		},
+	})
+	authorizer := awsapigatewayv2authorizers.NewHttpUserPoolAuthorizer(
+		jsii.String("PoolAuthorizer"),
+		pool,
+		&awsapigatewayv2authorizers.HttpUserPoolAuthorizerProps{
+			UserPoolClients: &[]awscognito.IUserPoolClient{readOnlyClient, fullAccessClient},
+		},
+	)
 	httpApi.AddRoutes(&awsapigatewayv2.AddRoutesOptions{
 		Path:        jsii.String("/products"),
 		Methods:     &[]awsapigatewayv2.HttpMethod{"POST"},
 		Integration: lambdaProxyIntegration,
+		Authorizer:  authorizer,
+		AuthorizationScopes: jsii.Strings(
+			*resourceServer.UserPoolResourceServerId() + "/products:*",
+		),
 	})
 	httpApi.AddRoutes(&awsapigatewayv2.AddRoutesOptions{
 		Path:        jsii.String("/products/{productId}"),
-		Methods:     &[]awsapigatewayv2.HttpMethod{"PUT", "GET", "DELETE"},
+		Methods:     &[]awsapigatewayv2.HttpMethod{"PUT", "DELETE"},
 		Integration: lambdaProxyIntegration,
+		Authorizer:  authorizer,
+		AuthorizationScopes: jsii.Strings(
+			*resourceServer.UserPoolResourceServerId() + "/products:*",
+		),
+	})
+	httpApi.AddRoutes(&awsapigatewayv2.AddRoutesOptions{
+		Path:        jsii.String("/products/{productId}"),
+		Methods:     &[]awsapigatewayv2.HttpMethod{"GET"},
+		Integration: lambdaProxyIntegration,
+		Authorizer:  authorizer,
+		AuthorizationScopes: jsii.Strings(
+			*resourceServer.UserPoolResourceServerId()+"/products:*",
+			*resourceServer.UserPoolResourceServerId()+"/products:read",
+		),
 	})
 
 	// Outputs
 	awscdk.NewCfnOutput(stack, jsii.String("ProductsApiUrl"), &awscdk.CfnOutputProps{
 		Value: httpApi.Url(),
+	})
+	awscdk.NewCfnOutput(stack, jsii.String("ProductsReadOnlyCognitoSignInUrl"), &awscdk.CfnOutputProps{
+		Value: domain.SignInUrl(readOnlyClient, &awscognito.SignInUrlOptions{
+			RedirectUri: domain.BaseUrl(&awscognito.BaseUrlOptions{}),
+		}),
+	})
+	awscdk.NewCfnOutput(stack, jsii.String("ProductsFullAccessCognitoSignInUrl"), &awscdk.CfnOutputProps{
+		Value: domain.SignInUrl(fullAccessClient, &awscognito.SignInUrlOptions{
+			RedirectUri: domain.BaseUrl(&awscognito.BaseUrlOptions{}),
+		}),
 	})
 
 	return stack
