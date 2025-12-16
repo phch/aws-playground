@@ -1,0 +1,58 @@
+schema {
+    query: Query
+    mutation: Mutation
+    subscription: Subscription
+}
+
+type Query {
+    getProduct(id: ID!): Product
+    listProducts: [Product!]!
+}
+
+type Mutation {
+    createProduct(input: CreateProductInput!): Product!
+    updateProduct(input: UpdateProductInput!): Product!
+    deleteProduct(id: ID!): DeleteProductResponse!
+}
+
+input CreateProductInput {
+    name: String!
+    description: String
+    price: Float!
+    category: String
+    stockQuantity: Int!
+}
+
+input UpdateProductInput {
+    id: ID!
+    name: String
+    description: String
+    price: Float
+    category: String
+    stockQuantity: Int
+}
+
+type Product {
+    id: ID!
+    name: String!
+    description: String
+    price: Float!
+    category: String
+    stockQuantity: Int!
+    createdAt: String!
+    updatedAt: String!
+}
+
+type DeleteProductResponse {
+    id: ID!
+    message: String!
+}
+
+type Subscription {
+    onCreateProduct: Product
+        @aws_subscribe(mutations: ["createProduct"])
+    onUpdateProduct: Product
+        @aws_subscribe(mutations: ["updateProduct"])
+    onDeleteProduct: DeleteProductResponse
+        @aws_subscribe(mutations: ["deleteProduct"])
+}

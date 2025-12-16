@@ -1,0 +1,11 @@
+com/product/model/UpdateProductInput.class
+com/product/service/ProductService.class
+com/product/exception/ValidationException.class
+com/product/model/DeleteProductResponse.class
+com/product/model/Product.class
+com/product/handler/ProductHandler.class
+com/product/model/CreateProductInput.class
+com/product/repository/ProductRepository.class
+com/product/exception/ProductNotFoundException.class
+com/product/repository/DynamoDBProductRepository.class
+com/product/util/ValidationUtil.class

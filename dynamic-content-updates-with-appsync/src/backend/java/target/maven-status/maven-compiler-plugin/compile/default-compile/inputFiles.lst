@@ -1,0 +1,11 @@
+/home/ec2-user/environment/aws-playground/dynamic-content-updates-with-appsync/src/backend/java/src/main/java/com/product/repository/DynamoDBProductRepository.java
+/home/ec2-user/environment/aws-playground/dynamic-content-updates-with-appsync/src/backend/java/src/main/java/com/product/service/ProductService.java
+/home/ec2-user/environment/aws-playground/dynamic-content-updates-with-appsync/src/backend/java/src/main/java/com/product/model/DeleteProductResponse.java
+/home/ec2-user/environment/aws-playground/dynamic-content-updates-with-appsync/src/backend/java/src/main/java/com/product/exception/ProductNotFoundException.java
+/home/ec2-user/environment/aws-playground/dynamic-content-updates-with-appsync/src/backend/java/src/main/java/com/product/model/CreateProductInput.java
+/home/ec2-user/environment/aws-playground/dynamic-content-updates-with-appsync/src/backend/java/src/main/java/com/product/repository/ProductRepository.java
+/home/ec2-user/environment/aws-playground/dynamic-content-updates-with-appsync/src/backend/java/src/main/java/com/product/exception/ValidationException.java
+/home/ec2-user/environment/aws-playground/dynamic-content-updates-with-appsync/src/backend/java/src/main/java/com/product/model/UpdateProductInput.java
+/home/ec2-user/environment/aws-playground/dynamic-content-updates-with-appsync/src/backend/java/src/main/java/com/product/util/ValidationUtil.java
+/home/ec2-user/environment/aws-playground/dynamic-content-updates-with-appsync/src/backend/java/src/main/java/com/product/handler/ProductHandler.java
+/home/ec2-user/environment/aws-playground/dynamic-content-updates-with-appsync/src/backend/java/src/main/java/com/product/model/Product.java

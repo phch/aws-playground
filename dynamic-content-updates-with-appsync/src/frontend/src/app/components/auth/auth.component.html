@@ -1,0 +1,29 @@
+<div class="auth-container">
+  <mat-card class="auth-card">
+    <mat-card-header>
+      <mat-card-title>Welcome to Products Dashboard</mat-card-title>
+    </mat-card-header>
+    
+    <mat-card-content>
+      <div class="auth-content">
+        <p class="auth-description">
+          Sign in or create an account to manage your products.
+        </p>
+        
+        <button 
+          mat-raised-button 
+          color="primary" 
+          (click)="signInWithHostedUI()"
+          [disabled]="isLoading"
+          class="signin-button">
+          <mat-spinner *ngIf="isLoading" diameter="20"></mat-spinner>
+          <span *ngIf="!isLoading">Sign In / Sign Up</span>
+        </button>
+
+        <p class="info-text">
+          You'll be redirected to a secure login page where you can sign in or create a new account.
+        </p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

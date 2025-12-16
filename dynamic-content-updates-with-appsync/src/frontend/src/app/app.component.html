@@ -1,0 +1,25 @@
+<div class="app-container" *ngIf="!isLoading">
+  <header class="app-header" *ngIf="isAuthenticated">
+    <div class="header-left">
+      <h1>{{ title }}</h1>
+      <nav class="app-nav">
+        <a routerLink="/products" routerLinkActive="active">Products</a>
+      </nav>
+    </div>
+    <div class="header-right">
+      <span class="username">{{ username }}</span>
+      <button mat-raised-button color="warn" (click)="logout()">
+        <mat-icon>logout</mat-icon>
+        Logout
+      </button>
+    </div>
+  </header>
+  <main class="app-content">
+    <router-outlet></router-outlet>
+  </main>
+</div>
+
+<div class="loading-container" *ngIf="isLoading">
+  <mat-spinner></mat-spinner>
+  <p>Loading...</p>
+</div>

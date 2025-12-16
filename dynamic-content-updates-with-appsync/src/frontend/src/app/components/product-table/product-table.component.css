@@ -1,0 +1,238 @@
+/* Product Table Component Styles */
+
+/* Container Layout */
+.product-table-container {
+  padding: 20px;
+  position: relative;
+  min-height: 400px;
+}
+
+/* Table Header */
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+/* Connection Status Indicator */
+.connection-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: #f5f5f5;
+  border-radius: 20px;
+  font-size: 14px;
+  cursor: help;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.connection-status:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.status-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  transition: all 0.3s ease;
+  animation: pulse 2s infinite;
+}
+
+.status-dot.connected {
+  background-color: #4caf50;
+  box-shadow: 0 0 10px rgba(76, 175, 80, 0.6);
+}
+
+.status-dot.disconnected {
+  background-color: #f44336;
+  box-shadow: 0 0 10px rgba(244, 67, 54, 0.6);
+  animation: none;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+.status-text {
+  font-weight: 500;
+  color: #333;
+  user-select: none;
+}
+
+/* Table Layout and Spacing */
+.table-wrapper {
+  position: relative;
+  overflow: auto;
+  max-height: 600px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+table {
+  width: 100%;
+  background-color: white;
+}
+
+.mat-mdc-header-row {
+  background-color: #fafafa;
+  font-weight: 600;
+}
+
+.mat-mdc-row {
+  height: 52px;
+  transition: background-color 0.2s ease;
+}
+
+.mat-mdc-row:hover {
+  background-color: #f5f5f5;
+}
+
+.mat-mdc-cell,
+.mat-mdc-header-cell {
+  padding: 0 16px;
+}
+
+/* Row Highlighting for Create Events - Light Green */
+.highlight-create {
+  background-color: #c8e6c9 !important;
+  transition: background-color 2s ease-out;
+  animation: highlightPulse 0.5s ease-in-out;
+}
+
+/* Row Highlighting for Update Events - Light Blue */
+.highlight-update {
+  background-color: #bbdefb !important;
+  transition: background-color 2s ease-out;
+  animation: highlightPulse 0.5s ease-in-out;
+}
+
+@keyframes highlightPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Fade-out Animation for Delete Events */
+.deleting-row {
+  animation: fadeOut 500ms ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: translateX(-10px) scale(0.98);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-20px) scale(0.95);
+  }
+}
+
+/* Loading Spinner Overlay */
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  backdrop-filter: blur(2px);
+}
+
+.loading-overlay mat-spinner {
+  margin-bottom: 16px;
+}
+
+.loading-text {
+  color: #666;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 60px 40px;
+  color: #666;
+}
+
+.empty-state-icon {
+  font-size: 48px;
+  color: #ccc;
+  margin-bottom: 16px;
+}
+
+.empty-state-title {
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.empty-state-message {
+  font-size: 14px;
+  color: #999;
+}
+
+/* Paginator Styling */
+mat-paginator {
+  margin-top: 16px;
+  border-radius: 0 0 4px 4px;
+  box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .product-table-container {
+    padding: 10px;
+  }
+  
+  .table-header {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+  
+  .connection-status {
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+  
+  .status-dot {
+    width: 10px;
+    height: 10px;
+  }
+  
+  .mat-mdc-cell,
+  .mat-mdc-header-cell {
+    padding: 0 8px;
+    font-size: 12px;
+  }
+}

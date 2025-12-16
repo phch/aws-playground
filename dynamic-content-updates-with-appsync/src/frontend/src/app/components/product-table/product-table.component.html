@@ -1,0 +1,99 @@
+<!-- Product Table Component Template -->
+<div class="product-table-container">
+  <!-- Header with Connection Status and Add Button -->
+  <div class="table-header">
+    <div class="connection-status" [title]="getConnectionStatusTooltip()">
+      <span class="status-dot" [ngClass]="{'connected': isConnected, 'disconnected': !isConnected}"></span>
+      <span class="status-text">{{ isConnected ? 'Connected' : 'Disconnected' }}</span>
+    </div>
+    <button mat-raised-button color="primary" (click)="openAddDialog()">
+      <mat-icon>add</mat-icon>
+      Add Product
+    </button>
+  </div>
+  
+  <div class="table-wrapper">
+    <table mat-table [dataSource]="dataSource" matSort [ngClass]="{'loading': isLoading}">
+      
+      <!-- ID Column -->
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
+        <td mat-cell *matCellDef="let product">{{ product.id }}</td>
+      </ng-container>
+      
+      <!-- Name Column -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+        <td mat-cell *matCellDef="let product">{{ product.name }}</td>
+      </ng-container>
+      
+      <!-- Description Column -->
+      <ng-container matColumnDef="description">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
+        <td mat-cell *matCellDef="let product">{{ product.description || 'N/A' }}</td>
+      </ng-container>
+      
+      <!-- Price Column -->
+      <ng-container matColumnDef="price">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Price</th>
+        <td mat-cell *matCellDef="let product">{{ product.price | currency }}</td>
+      </ng-container>
+      
+      <!-- Category Column -->
+      <ng-container matColumnDef="category">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Category</th>
+        <td mat-cell *matCellDef="let product">{{ product.category || 'N/A' }}</td>
+      </ng-container>
+      
+      <!-- Stock Quantity Column -->
+      <ng-container matColumnDef="stockQuantity">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Stock</th>
+        <td mat-cell *matCellDef="let product">{{ product.stockQuantity }}</td>
+      </ng-container>
+      
+      <!-- Updated At Column -->
+      <ng-container matColumnDef="updatedAt">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Last Updated</th>
+        <td mat-cell *matCellDef="let product">{{ product.updatedAt | date:'short' }}</td>
+      </ng-container>
+      
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let product">
+          <button mat-icon-button color="primary" (click)="openEditDialog(product)" title="Edit">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="deleteProduct(product)" title="Delete">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+      
+      <!-- Table rows with dynamic CSS classes for highlighting -->
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let product; columns: displayedColumns;" [ngClass]="getRowClass(product)"></tr>
+      
+      <!-- Empty state -->
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+          <div class="empty-state">
+            <p *ngIf="!isLoading">No products available</p>
+          </div>
+        </td>
+      </tr>
+    </table>
+    
+    <!-- Loading spinner overlay -->
+    <div class="loading-overlay" *ngIf="isLoading">
+      <mat-spinner></mat-spinner>
+    </div>
+  </div>
+  
+  <!-- Paginator -->
+  <mat-paginator 
+    [pageSizeOptions]="[5, 10, 25, 50]" 
+    [pageSize]="10"
+    showFirstLastButtons>
+  </mat-paginator>
+</div>
