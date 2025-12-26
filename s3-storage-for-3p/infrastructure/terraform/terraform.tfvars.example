@@ -1,0 +1,19 @@
+# Example Terraform variables configuration
+# Copy this to terraform.tfvars and configure with your values
+
+aws_region  = "us-east-1"
+environment = "dev"
+
+# CORS origins for S3 bucket
+# In production, restrict to your actual frontend domain
+cors_origins = [
+  "http://localhost:3000",
+  "https://yourdomain.com"
+]
+
+# Additional tags (optional)
+# tags = {
+#   Team        = "Platform"
+#   CostCenter  = "Engineering"
+#   Compliance  = "HIPAA"
+# }
